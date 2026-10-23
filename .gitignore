@@ -1,0 +1,33 @@
+# --- bí mật & cấu hình cục bộ (KHÔNG commit) ---
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# --- backend ---
+backend/target/
+backend/uploads/
+backend/logs/
+*.log
+backend/log.txt
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*
+
+# --- frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/*.tsbuildinfo
+frontend/node_modules/.tmp/
+
+# --- IDE / OS ---
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

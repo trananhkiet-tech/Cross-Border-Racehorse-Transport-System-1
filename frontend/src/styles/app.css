@@ -1,0 +1,136 @@
+/* ==========================================================================
+   App-level styles: kết nối Bootstrap 5 với design token IRTMS + bố cục responsive.
+   ========================================================================== */
+:root {
+  --bs-body-font-family: var(--font-sans);
+  --bs-body-font-size: 14px;
+  --bs-body-line-height: 20px;
+  --bs-body-color: var(--text-primary);
+  --bs-body-bg: var(--background);
+  --bs-primary: #16325C;
+  --bs-primary-rgb: 22, 50, 92;
+  --bs-link-color: var(--primary);
+  --bs-link-color-rgb: 22, 50, 92;
+  --bs-border-color: var(--border);
+  --bs-border-radius: var(--radius-md);
+  --bs-success: #1B7340;
+  --bs-danger: #B42323;
+  --bs-warning: #D97706;
+  --bs-info: #1D5FB0;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--background);
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4, h5 { color: var(--text-primary); }
+a { color: var(--primary); }
+
+/* --------------------------------------------------------------- shell */
+.ir-shell.app-shell { height: 100vh; }
+.app-shell .ir-sidebar { transition: transform 160ms ease-out; }
+.ir-nav-item i.bi { font-size: 18px; width: 20px; text-align: center; flex: none; }
+.ir-nav-item:hover { text-decoration: none; }
+.app-sidebar-backdrop { display: none; }
+.app-mobile-toggle { display: none !important; }
+
+@media (max-width: 1023.98px) {
+  .app-shell .ir-sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; z-index: 1100; transform: translateX(-100%);
+  }
+  .app-shell.sidebar-open .ir-sidebar { transform: translateX(0); }
+  .app-shell.sidebar-open .app-sidebar-backdrop {
+    display: block; position: fixed; inset: 0; background: var(--overlay); z-index: 1050;
+  }
+  .app-mobile-toggle { display: inline-flex !important; }
+  .ir-topbar { padding: 0 12px; }
+  .ir-topbar .ir-user-text { display: none; }
+  .ir-content { padding: 16px; gap: 16px; }
+}
+@media (max-width: 575.98px) {
+  .ir-pagehead { flex-direction: column; align-items: stretch; }
+  .ir-pagehead-actions { flex-wrap: wrap; }
+  .ir-table-toolbar .ir-search { width: 100% !important; }
+}
+
+/* --------------------------------------------------------------- layout helpers */
+.app-grid { display: grid; gap: 16px; }
+.app-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.app-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.app-grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.app-grid-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.app-grid-6 { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.app-grid-main { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 1279.98px) {
+  .app-grid-5, .app-grid-6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .app-grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 1023.98px) {
+  .app-grid-main { grid-template-columns: minmax(0, 1fr); }
+  .app-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767.98px) {
+  .app-grid-2, .app-grid-3, .app-grid-4, .app-grid-5, .app-grid-6 { grid-template-columns: minmax(0, 1fr); }
+}
+.app-span-2 { grid-column: span 2; }
+@media (max-width: 767.98px) { .app-span-2 { grid-column: auto; } }
+
+.app-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.app-spacer { flex: 1 1 0%; }
+.app-section-title { font-size: 16px; font-weight: 600; margin: 0; }
+.app-text-sm { font-size: 13px; line-height: 18px; }
+.app-text-xs { font-size: 12px; line-height: 16px; }
+.app-pre { white-space: pre-line; }
+
+/* --------------------------------------------------------------- form controls inside ir-input */
+.ir-input input, .ir-input select, .ir-input textarea { outline: none; }
+.ir-textarea textarea { width: 100%; }
+.ir-field .ir-field-error { display: flex; gap: 4px; align-items: center; }
+.form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+.form-check-input:focus { box-shadow: 0 0 0 0.2rem rgba(61, 123, 224, 0.25); border-color: var(--focus-ring); }
+
+/* --------------------------------------------------------------- toasts */
+.app-toasts { position: fixed; right: 24px; bottom: 24px; z-index: 1300; display: flex; flex-direction: column; gap: 8px; }
+@media (max-width: 575.98px) { .app-toasts { left: 12px; right: 12px; bottom: 12px; } .app-toasts .ir-toast { width: 100%; } }
+
+/* --------------------------------------------------------------- auth pages */
+.auth-page { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); }
+.auth-hero {
+  background: linear-gradient(160deg, #0C1E38 0%, #16325C 55%, #223F6B 100%);
+  color: #E7EDF6; padding: 48px; display: flex; flex-direction: column; justify-content: space-between;
+}
+.auth-hero h2 { color: #fff; font-size: 30px; line-height: 38px; font-weight: 700; margin: 0 0 12px; }
+.auth-hero p { color: #BAC5D5; font-size: 15px; line-height: 22px; max-width: 460px; }
+.auth-hero .auth-points { list-style: none; padding: 0; margin: 24px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.auth-hero .auth-points li { display: flex; gap: 10px; color: #E7EDF6; }
+.auth-panel { display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
+.auth-card { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 20px; }
+.auth-card h1 { font-size: 24px; line-height: 32px; margin: 0; font-weight: 700; }
+@media (max-width: 1023.98px) { .auth-page { grid-template-columns: minmax(0, 1fr); } .auth-hero { display: none; } }
+
+/* --------------------------------------------------------------- misc */
+.app-link-reset { color: inherit; text-decoration: none; }
+.app-clickable { cursor: pointer; }
+.app-table-row-link { cursor: pointer; }
+.app-table-row-link:hover td { background: var(--surface-subtle); }
+.ir-table td, .ir-table th { vertical-align: middle; }
+.app-num { text-align: right; font-variant-numeric: tabular-nums; }
+.app-empty-cell { color: var(--text-disabled); }
+.app-chart-box { width: 100%; height: 280px; }
+.app-chart-box-sm { width: 100%; height: 220px; }
+.app-demo-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--warning); background: var(--warning-soft); border: 1px solid var(--warning-border); border-radius: var(--radius-full); padding: 2px 10px; }
+.app-map-svg { width: 100%; height: auto; display: block; }
+.app-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: currentColor; }
+.app-kv { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 8px 16px; }
+@media (max-width: 575.98px) { .app-kv { grid-template-columns: minmax(0, 1fr); } }
+.app-kv dt { color: var(--text-muted); font-weight: 500; font-size: 13px; }
+.app-kv dd { margin: 0; }
+.app-sticky-actions { position: sticky; bottom: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 8px; justify-content: flex-end; z-index: 2; }
+.app-file-input { display: none; }
+
+/* .ir-content là flex column cuộn dọc: không để phần tử con (tab, bảng, thẻ có overflow) bị co về 0 khi trang dài. */
+.ir-content > * { flex-shrink: 0; }

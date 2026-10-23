@@ -1,0 +1,12 @@
+# Profile production: không seed, bắt buộc JWT_SECRET, tắt Swagger.
+app:
+  seed:
+    demo-data: false
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+logging:
+  level:
+    com.example.racetransport: INFO

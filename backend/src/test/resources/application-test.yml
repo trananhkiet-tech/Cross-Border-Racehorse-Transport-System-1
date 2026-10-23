@@ -1,0 +1,29 @@
+# Profile test: H2 trong bộ nhớ (chế độ tương thích SQL Server), schema do Hibernate tạo cho test.
+# Migration Flyway (T-SQL) chỉ chạy trên SQL Server thật.
+spring:
+  datasource:
+    url: jdbc:h2:mem:irtms_test;MODE=MSSQLServer;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+
+app:
+  jwt:
+    secret: integration-test-secret-integration-test-secret-1234
+    expiration-minutes: 60
+  storage:
+    upload-dir: target/test-uploads
+  seed:
+    demo-data: false
+
+logging:
+  level:
+    root: WARN

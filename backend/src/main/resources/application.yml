@@ -1,0 +1,81 @@
+# =====================================================================
+# Cấu hình chung. Bí mật đọc từ biến môi trường hoặc file backend/.env
+# (đã gitignore). Xem backend/.env.example.
+# =====================================================================
+spring:
+  application:
+    name: irtms-backend
+  config:
+    import: optional:file:.env[.properties]
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  datasource:
+    url: ${DB_URL:jdbc:sqlserver://localhost:1433;databaseName=irtms;encrypt=true;trustServerCertificate=true}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Schema do Flyway quản lý. KHÔNG dùng update.
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+        # Cột chuỗi là NVARCHAR (tiếng Việt)
+        type.prefer_nationalized_chars: true
+        default_batch_fetch_size: 50
+  flyway:
+    enabled: ${DB_MIGRATION_ENABLED:true}
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+    time-zone: ${APP_TIME_ZONE:Asia/Ho_Chi_Minh}
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+app:
+  time-zone: ${APP_TIME_ZONE:Asia/Ho_Chi_Minh}
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+    issuer: irtms
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  storage:
+    upload-dir: ${UPLOAD_DIR:uploads}
+    max-file-size-bytes: 10485760
+    allowed-types: application/pdf,image/jpeg,image/png,image/webp
+  business:
+    deposit-percent: 50
+    quote-validity-days: 14
+    invoice-due-days: 7
+  seed:
+    demo-data: false
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    tags-sorter: alpha
+
+logging:
+  level:
+    root: INFO
+    com.example.racetransport: INFO

@@ -1,0 +1,7 @@
+# Profile phát triển: bật seed dữ liệu demo (chỉ khi bảng app_user trống).
+app:
+  seed:
+    demo-data: true
+logging:
+  level:
+    com.example.racetransport: DEBUG

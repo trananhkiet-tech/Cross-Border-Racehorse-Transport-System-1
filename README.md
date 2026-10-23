@@ -9,8 +9,8 @@ Monorepo: `backend/` (Java 21, Spring Boot 3.5), `frontend/` (React + TypeScript
 
 ## 1. Cấu hình
 ```bash
-cp .env.example .env            # tham khảo; backend đọc biến môi trường
-cp backend/.env.example backend/.env   # Spring không tự đọc .env: nạp vào shell (set -a; source backend/.env; set +a)
+cp .env .env            # tham khảo; backend đọc biến môi trường
+cp backend/.env backend/.env   # Spring không tự đọc .env: nạp vào shell (set -a; source backend/.env; set +a)
 ```
 Đặt tối thiểu: `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` và **`JWT_SECRET`** (chuỗi ngẫu nhiên ≥ 32 ký tự). Không commit file `.env`.
 Ví dụ sinh secret: `openssl rand -base64 48`.

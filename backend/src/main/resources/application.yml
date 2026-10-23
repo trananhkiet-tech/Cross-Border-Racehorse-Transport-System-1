@@ -1,6 +1,6 @@
 # =====================================================================
 # Cấu hình chung. Bí mật đọc từ biến môi trường hoặc file backend/.env
-# (đã gitignore). Xem backend/.env.example.
+# (đã gitignore). Xem backend/.env.
 # =====================================================================
 spring:
   application:

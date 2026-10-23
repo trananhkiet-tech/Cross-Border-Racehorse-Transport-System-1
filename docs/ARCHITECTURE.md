@@ -56,7 +56,7 @@ com.example.racetransport
 
 ### 2.3 Cấu hình
 
-`application.yml` đọc biến môi trường hoặc `backend/.env` (`spring.config.import: optional:file:.env[.properties]`). Hai profile: `dev` (seed dữ liệu demo khi `app_user` trống, bật Swagger, log DEBUG) và `prod` (không seed, tắt Swagger). Xem `backend/.env.example`.
+`application.yml` đọc biến môi trường hoặc `backend/.env` (`spring.config.import: optional:file:.env[.properties]`). Hai profile: `dev` (seed dữ liệu demo khi `app_user` trống, bật Swagger, log DEBUG) và `prod` (không seed, tắt Swagger). Xem `../backend/.env`.
 
 ## 3. Frontend
 

@@ -59,6 +59,7 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import org.springframework.core.io.Resource;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -356,7 +357,8 @@ public class HealthService {
     public StoredFile reportFile(UserPrincipal actor, Long id) {
         VeterinaryConsultation v = loadConsultationVisible(actor, id);
         Guard.state(v.getReportFile() != null, "Tư vấn chưa có tệp báo cáo");
-        return v.getReportFile();
+        // open-in-view=false: nạp proxy LAZY ngay trong transaction để controller đọc được tên/loại tệp
+        return Hibernate.unproxy(v.getReportFile()) instanceof StoredFile f ? f : v.getReportFile();
     }
 
     public Resource open(StoredFile f) {

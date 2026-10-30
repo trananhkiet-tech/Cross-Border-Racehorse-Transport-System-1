@@ -36,6 +36,7 @@ import java.util.List;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -203,7 +204,8 @@ public class DocumentService {
     public StoredFile fileOf(UserPrincipal actor, Long id) {
         Document d = load(id);
         checkView(actor, d);
-        return d.getFile();
+        // open-in-view=false: nạp proxy LAZY ngay trong transaction để controller đọc được tên/loại tệp
+        return Hibernate.unproxy(d.getFile()) instanceof StoredFile f ? f : d.getFile();
     }
 
     public Resource open(StoredFile file) {

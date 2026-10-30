@@ -20,6 +20,7 @@ import com.example.racetransport.trip.service.TripAccess;
 import com.example.racetransport.user.repository.AppUserRepository;
 import java.util.List;
 import org.springframework.core.io.Resource;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -95,7 +96,8 @@ public class AttachmentService {
         if (!tripAccess.canView(actor, trip)) {
             throw new ForbiddenException("Bạn không có quyền xem tệp này");
         }
-        return a.getFile();
+        // open-in-view=false: nạp proxy LAZY ngay trong transaction để controller đọc được tên/loại tệp
+        return Hibernate.unproxy(a.getFile()) instanceof StoredFile f ? f : a.getFile();
     }
 
     public Resource open(StoredFile f) {

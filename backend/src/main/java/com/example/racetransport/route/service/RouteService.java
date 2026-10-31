@@ -229,4 +229,27 @@ public class RouteService {
     private static String blank(String s) {
         return s == null || s.isBlank() ? null : s.trim();
     }
+
+    /**
+     * Xóa tuyến: chưa từng dùng cho chuyến, không là tuyến thay thế của tuyến khác và không nằm trong quyết định đổi tuyến
+     * thì xóa hẳn cùng các điểm dừng; ngược lại chuyển "Ngừng dùng" để giữ lịch sử chuyến.
+     * Trả về true nếu đã xóa hẳn.
+     */
+    @Transactional
+    public boolean delete(Long id) {
+        Route r = load(id);
+        Guard.state(trips.findByRouteIdOrderByPlannedDepartureDesc(id).stream().noneMatch(t -> RUNNING.contains(t.getStatus())
+                        || t.getStatus() == TripStatus.SCHEDULED || t.getStatus() == TripStatus.PREPARING
+                        || t.getStatus() == TripStatus.READY_FOR_DEPARTURE),
+                "Tuyến đang được dùng cho chuyến chưa kết thúc");
+        boolean used = !trips.findByRouteIdOrderByPlannedDepartureDesc(id).isEmpty()
+                || !routes.findByAlternativeOfId(id).isEmpty() || routes.usedByIncidentAction(id);
+        if (used) {
+            r.setStatus(RouteStatus.INACTIVE);
+            return false;
+        }
+        stops.deleteAll(stops.findByRouteIdOrderByStopOrderAsc(id));
+        routes.delete(r);
+        return true;
+    }
 }

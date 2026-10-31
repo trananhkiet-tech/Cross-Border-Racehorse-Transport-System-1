@@ -29,6 +29,9 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
 
     List<Route> findByAlternativeOfId(Long routeId);
 
+    @Query("select count(a) > 0 from IncidentAction a where a.newRoute.id = :routeId")
+    boolean usedByIncidentAction(@Param("routeId") Long routeId);
+
     boolean existsByRouteCode(String code);
 
     long countByStatus(RouteStatus status);

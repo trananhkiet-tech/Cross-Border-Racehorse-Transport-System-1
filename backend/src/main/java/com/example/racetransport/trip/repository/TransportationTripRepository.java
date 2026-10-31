@@ -19,7 +19,7 @@ public interface TransportationTripRepository extends JpaRepository<Transportati
     @EntityGraph(attributePaths = {"request", "request.customer", "route", "vehicle", "coordinator"})
     @Query("""
             select t from TransportationTrip t
-            where t.status in :statuses
+            where t.status in :statuses and t.archived = false
               and (:customerId is null or t.request.customer.id = :customerId)
               and (:staffId is null or exists (select a.id from TripStaffAssignment a
                                                where a.trip = t and a.staff.id = :staffId))
@@ -72,4 +72,6 @@ public interface TransportationTripRepository extends JpaRepository<Transportati
     List<TransportationTrip> findNeedingAssignment(@Param("statuses") Collection<TripStatus> statuses);
 
     List<TransportationTrip> findByStatusIn(Collection<TripStatus> statuses);
+
+    List<TransportationTrip> findByStatusInAndArchivedFalse(Collection<TripStatus> statuses);
 }

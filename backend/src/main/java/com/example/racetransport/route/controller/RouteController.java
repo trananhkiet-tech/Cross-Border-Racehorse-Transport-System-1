@@ -80,4 +80,11 @@ public class RouteController {
     public RouteDetail deleteStop(@PathVariable Long routeId, @PathVariable Long stopId) {
         return service.deleteStop(routeId, stopId);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('FLEET_ROUTE_COORDINATOR')")
+    public java.util.Map<String, Object> delete(@PathVariable Long id) {
+        boolean removed = service.delete(id);
+        return java.util.Map.of("deleted", removed, "archived", !removed);
+    }
 }

@@ -136,4 +136,20 @@ public class TripController {
     public List<TimelineItem> timeline(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id) {
         return execution.timeline(actor, id);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
+    @Operation(summary = "Xóa (lưu trữ) chuyến đã bàn giao hoặc đã hủy – giữ lịch sử cho báo cáo")
+    public java.util.Map<String, Boolean> archive(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id) {
+        tripService.archive(actor, id);
+        return java.util.Map.of("archived", true);
+    }
+
+    @PostMapping("/archive-finished")
+    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
+    @Operation(summary = "Dọn hàng loạt chuyến đã bàn giao/đã hủy (olderThanDays ngày không cập nhật)")
+    public java.util.Map<String, Integer> archiveFinished(@AuthenticationPrincipal UserPrincipal actor,
+                                                          @RequestParam(defaultValue = "0") int olderThanDays) {
+        return java.util.Map.of("archived", tripService.archiveFinished(actor, olderThanDays));
+    }
 }

@@ -453,4 +453,39 @@ public class TripService {
         }
         return a;
     }
+
+    // ================================================================== lưu trữ (xóa mềm)
+    private static final EnumSet<TripStatus> FINISHED = EnumSet.of(TripStatus.DELIVERED, TripStatus.CANCELLED);
+
+    /** Manager lưu trữ một chuyến đã bàn giao / đã hủy: ẩn khỏi danh sách, báo cáo và lịch sử vẫn giữ nguyên. */
+    @Transactional
+    public void archive(UserPrincipal actor, Long tripId) {
+        if (!actor.isManager()) {
+            throw new ForbiddenException("Chỉ Logistics Manager được xóa (lưu trữ) chuyến");
+        }
+        TransportationTrip t = tripAccess.load(tripId);
+        Guard.state(FINISHED.contains(t.getStatus()), "Chỉ xóa được chuyến đã bàn giao hoặc đã hủy");
+        Guard.state(!Boolean.TRUE.equals(t.getArchived()), "Chuyến đã được lưu trữ");
+        t.setArchived(true);
+        t.setArchivedAt(LocalDateTime.now(clock));
+    }
+
+    /** Dọn hàng loạt các chuyến đã bàn giao / đã hủy cập nhật lần cuối cách đây ít nhất {@code olderThanDays} ngày. */
+    @Transactional
+    public int archiveFinished(UserPrincipal actor, int olderThanDays) {
+        if (!actor.isManager()) {
+            throw new ForbiddenException("Chỉ Logistics Manager được dọn chuyến đã hoàn tất");
+        }
+        LocalDateTime limit = LocalDateTime.now(clock).minusDays(Math.max(olderThanDays, 0));
+        LocalDateTime now = LocalDateTime.now(clock);
+        int n = 0;
+        for (TransportationTrip t : trips.findByStatusInAndArchivedFalse(FINISHED)) {
+            if (t.getUpdatedAt() == null || !t.getUpdatedAt().isAfter(limit)) {
+                t.setArchived(true);
+                t.setArchivedAt(now);
+                n++;
+            }
+        }
+        return n;
+    }
 }

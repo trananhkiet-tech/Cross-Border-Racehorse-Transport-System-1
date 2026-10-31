@@ -82,6 +82,13 @@ public class TransportationTrip {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    /** Lưu trữ (xóa mềm): ẩn khỏi danh sách làm việc, vẫn giữ cho báo cáo/lịch sử. */
+    @Column(name = "archived", nullable = false)
+    private Boolean archived = Boolean.FALSE;
+
+    @Column(name = "archived_at")
+    private LocalDateTime archivedAt;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -149,4 +156,10 @@ public class TransportationTrip {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public Boolean getArchived() { return archived; }
+    public void setArchived(Boolean archived) { this.archived = archived; }
+
+    public LocalDateTime getArchivedAt() { return archivedAt; }
+    public void setArchivedAt(LocalDateTime archivedAt) { this.archivedAt = archivedAt; }
 }

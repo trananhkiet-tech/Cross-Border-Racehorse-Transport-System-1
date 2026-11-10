@@ -58,6 +58,7 @@ import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -331,7 +332,8 @@ public class ClaimService {
         loadVisible(actor, claimId);
         ClaimEvidence e = evidences.findById(evidenceId).filter(x -> x.getClaim().getId().equals(claimId))
                 .orElseThrow(() -> new NotFoundException("Không tìm thấy bằng chứng"));
-        return e.getFile();
+        // open-in-view=false: nạp proxy LAZY ngay trong transaction để controller đọc được tên/loại tệp
+        return Hibernate.unproxy(e.getFile()) instanceof StoredFile f ? f : e.getFile();
     }
 
     public Resource open(StoredFile f) {

@@ -1,5 +1,8 @@
 package com.example.racetransport.notification.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.example.racetransport.common.response.PageResponse;
 import com.example.racetransport.notification.dto.NotificationResponse;
 import com.example.racetransport.notification.service.NotificationService;
@@ -48,5 +51,16 @@ public class NotificationController {
     @PostMapping("/read-all")
     public Map<String, Integer> readAll(@AuthenticationPrincipal UserPrincipal actor) {
         return Map.of("updated", service.markAllRead(actor));
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id) {
+        service.delete(actor, id);
+    }
+
+    @DeleteMapping("/read")
+    public Map<String, Integer> deleteRead(@AuthenticationPrincipal UserPrincipal actor) {
+        return Map.of("deleted", service.deleteRead(actor));
     }
 }

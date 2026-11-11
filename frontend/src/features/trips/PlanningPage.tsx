@@ -8,6 +8,8 @@ import { refreshCounts } from '../../layouts/AppLayout';
 import { StaffRoleLabels, TransportModeLabels, VehicleTypeLabels, type StaffRole } from '../../types/enums';
 import type { RequestSummary } from '../../types/api';
 import { countryName, formatDate, isoDateTimePlus } from '../../utils/format';
+import { estimateRoute } from '../../utils/routeEstimate';
+import { rolesFor } from '../../utils/staff';
 import { RouteText } from '../common/bits';
 
 /** Trip Planning: chọn yêu cầu READY_FOR_PLANNING → chọn tuyến → xe → nhân sự → tạo chuyến. */
@@ -16,7 +18,6 @@ function PlanForm({ req }: { req: RequestSummary }) {
   const { run, busy } = useAction();
   const detail = useAsync(() => requestApi.get(req.id), [req.id]);
   const routes = useAsync(() => routeApi.list({ status: ['ACTIVE'] }), []);
-  const staff = useAsync(() => employeeApi.list('DRIVER_ESCORT'), []);
   const [routeId, setRouteId] = useState<number | ''>('');
   const [dep, setDep] = useState(`${req.requestedDepartureDate}T08:00`);
   const [arr, setArr] = useState('');
@@ -36,24 +37,39 @@ function PlanForm({ req }: { req: RequestSummary }) {
   const routeDetail = useAsync(() => routeApi.get(routeId as number), [routeId], routeId !== '');
   const horseCount = detail.data?.horses.length ?? req.horseCount;
 
+  // Giờ đến dự kiến: ưu tiên tính từ các điểm dừng (quãng đường + thời gian dừng), nếu chưa đủ tọa độ thì dùng ước tính của tuyến.
+  const computed = useMemo(() => (routeDetail.data ? estimateRoute(routeDetail.data.stops, routeDetail.data.transportMode) : null), [routeDetail.data]);
+  const totalMin = computed ? computed.totalMin : route?.estimatedDurationHours ? Math.round(route.estimatedDurationHours * 60) : 0;
   useEffect(() => {
-    if (route?.estimatedDurationHours && dep) {
+    if (totalMin && dep) {
       const d = new Date(dep);
-      d.setMinutes(d.getMinutes() + Math.round(route.estimatedDurationHours * 60));
+      d.setMinutes(d.getMinutes() + totalMin);
       const pad = (n: number) => String(n).padStart(2, '0');
       setArr(`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`);
     }
-  }, [route?.id, route?.estimatedDurationHours, dep]);
+  }, [route?.id, totalMin, dep]);
 
+  const windowOk = !!dep && !!arr && arr > dep;
+  // Chỉ nhân sự hợp lệ và RẢNH trong khung giờ này (không bị khóa, GPLX còn hạn, không trùng chuyến khác).
+  const staff = useAsync(() => employeeApi.available(dep, arr), [dep, arr], windowOk);
   const vehicles = useAsync(() => vehicleApi.available(dep, arr, Math.max(1, horseCount)), [dep, arr, horseCount], !!dep && !!arr && arr > dep);
-  const chosen = Object.entries(assign).filter(([, r]) => r).map(([id, role]) => ({ staffId: Number(id), role: role as StaffRole }));
+  const availableIds = useMemo(() => new Set((staff.data ?? []).map((e) => e.userId)), [staff.data]);
+  // Bỏ chọn những người không còn rảnh sau khi đổi khung giờ.
+  useEffect(() => {
+    if (!staff.data) return;
+    setAssign((x) => {
+      const kept = Object.fromEntries(Object.entries(x).filter(([id]) => availableIds.has(Number(id))));
+      return Object.keys(kept).length === Object.keys(x).length ? x : kept;
+    });
+  }, [availableIds, staff.data]);
+  const chosen = Object.entries(assign).filter(([id, r]) => r && availableIds.has(Number(id))).map(([id, role]) => ({ staffId: Number(id), role: role as StaffRole }));
 
   const submit = async () => {
     const errs = {
       route: !routeId ? 'Chọn tuyến' : undefined,
       dep: !dep ? 'Chọn giờ khởi hành' : dep < isoDateTimePlus(0) ? 'Giờ khởi hành phải ở tương lai' : undefined,
       arr: !arr ? 'Chọn giờ đến dự kiến' : arr <= dep ? 'Giờ đến phải sau giờ khởi hành' : undefined,
-      staff: chosen.some((c) => c.role === 'DRIVER') ? undefined : 'Cần ít nhất một tài xế',
+      staff: !chosen.some((c) => c.role === 'DRIVER') ? 'Cần ít nhất một tài xế' : chosen.filter((c) => c.role === 'TEAM_LEADER').length > 1 ? 'Mỗi chuyến chỉ có một trưởng nhóm' : undefined,
     };
     setErrors(errs);
     if (Object.values(errs).some(Boolean)) return;
@@ -81,7 +97,7 @@ function PlanForm({ req }: { req: RequestSummary }) {
           {routes.data && matching.length === 0 && <Alert tone="warning" title="Chưa có tuyến đang dùng cho lộ trình này">Hãy tạo hoặc kích hoạt tuyến {countryName(req.originCountry)} → {countryName(req.destinationCountry)} ở mục Tuyến đường.</Alert>}
           <SelectField label="Tuyến" value={routeId} onChange={(v) => setRouteId(v ? Number(v) : '')} placeholder="Chọn tuyến…" error={errors.route} required
             options={(matching.length ? matching : routes.data ?? []).map((r) => ({ value: r.id, label: `${r.routeCode} – ${r.name}${r.alternativeOfId ? ' (thay thế)' : ''}` }))} />
-          {routeDetail.data && <RouteMap stops={routeDetail.data.stops} height={260} />}
+          {routeDetail.data && <RouteMap stops={routeDetail.data.stops} height={300} estimate transportMode={routeDetail.data.transportMode} departure={dep} />}
         </div>
       </Card>
       <Card title="2. Thời gian" icon="bi-clock">
@@ -105,18 +121,19 @@ function PlanForm({ req }: { req: RequestSummary }) {
           </AsyncView>
         )}
       </Card>
-      <Card title="4. Tài xế & áp tải" icon="bi-people" subtitle="Chọn vai trò trên chuyến cho từng nhân sự. Hệ thống chặn trùng lịch và giấy phép hết hạn." flush>
+      <Card title="4. Tài xế & áp tải" icon="bi-people" subtitle="Chỉ hiện nhân sự hợp lệ và đang rảnh trong khung giờ đã chọn (người bị khóa, hết hạn giấy phép hoặc bận chuyến khác không có trong danh sách)." flush>
         {errors.staff && <div style={{ padding: '12px 16px' }}><Alert tone="error">{errors.staff}</Alert></div>}
-        <DataTable flush dense rows={staff.data} loading={staff.loading} error={staff.error} onRetry={staff.reload} rowKey={(e) => e.userId} emptyTitle="Chưa có tài xế / áp tải"
+        {!windowOk ? <div style={{ padding: '12px 16px' }}><span className="ir-muted app-text-sm">Chọn thời gian hợp lệ để xem nhân sự rảnh.</span></div> :
+        <DataTable flush dense rows={staff.data} loading={staff.loading} error={staff.error} onRetry={staff.reload} rowKey={(e) => e.userId} emptyTitle="Không có nhân sự rảnh trong khung giờ này"
           columns={[
             { key: 'n', header: 'Nhân sự', render: (e) => <Cell main={e.fullName} sub={e.licenseNumber ? `GP ${e.licenseNumber}` : undefined} /> },
             { key: 'a', header: 'Chứng chỉ', render: (e) => (e.airEscortCertified ? <Badge tone="info" icon="bi-airplane">Hàng không</Badge> : '—') },
             { key: 'c', header: 'Chuyến đang giao', align: 'right', render: (e) => e.activeAssignments },
             { key: 'r', header: 'Vai trò trên chuyến', render: (e) => (
               <div style={{ width: 200 }}><SelectField size="sm" value={assign[e.userId] ?? ''} onChange={(v) => setAssign((x) => ({ ...x, [e.userId]: v as StaffRole | '' }))} placeholder="Không phân công"
-                options={(['DRIVER', 'ESCORT', 'TEAM_LEADER'] as StaffRole[]).map((r) => ({ value: r, label: StaffRoleLabels[r] }))} /></div>
+                options={rolesFor(e.staffRole).map((r) => ({ value: r, label: StaffRoleLabels[r] }))} /></div>
             ) },
-          ]} />
+          ]} />}
       </Card>
       <Card title="5. Hướng dẫn vận chuyển" icon="bi-chat-left-text">
         <div className="app-grid app-grid-2">

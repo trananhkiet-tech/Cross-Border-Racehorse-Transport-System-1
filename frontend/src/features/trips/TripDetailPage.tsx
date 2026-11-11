@@ -49,6 +49,7 @@ export function TripDetailPage() {
   const [tab, setTab] = useState<TabKey>('overview');
   const [dlg, setDlg] = useState<Dlg>(null);
   const [version, setVersion] = useState(0);
+  const [removeOpen, setRemoveOpen] = useState(false);
   const { run } = useAction();
   const navigate = useNavigate();
 
@@ -82,9 +83,13 @@ export function TripDetailPage() {
                   {has('REPORT_INCIDENT') && <Button variant="danger-outline" icon="bi-exclamation-triangle" onClick={() => setDlg('incident')}>Báo sự cố</Button>}
                   {has('DECIDE_INCIDENT') && t.incidents.length > 0 && <Button variant="danger" icon="bi-shield-exclamation" onClick={() => { const open = t.incidents.find((i) => i.status !== 'CLOSED' && i.status !== 'RESOLVED') ?? t.incidents[0]; navigate(`/incidents/${open.id}`); }}>Xử lý sự cố</Button>}
                   {has('CANCEL') && <Button variant="danger-outline" icon="bi-slash-circle" onClick={() => setDlg('cancel')}>Hủy chuyến</Button>}
+                  {user.role === 'LOGISTICS_MANAGER' && (t.status === 'DELIVERED' || t.status === 'CANCELLED') && <Button variant="danger-outline" icon="bi-trash" onClick={() => setRemoveOpen(true)}>Xóa chuyến</Button>}
                 </>
               }
             />
+            <ConfirmDialog open={removeOpen} onClose={() => setRemoveOpen(false)} tone="error" confirmLabel="Xóa chuyến" title="Xóa chuyến này?"
+              message="Chuyến sẽ được lưu trữ: biến mất khỏi danh sách nhưng báo cáo và lịch sử vẫn được giữ."
+              onConfirm={async () => { await run(() => tripApi.archive(t.id), 'Đã xóa chuyến'); refreshCounts(); navigate('/trips'); }} />
             <Card><Stepper steps={flowSteps(t.status)} /></Card>
             {t.status === 'CANCELLED' && <Alert tone="error">Chuyến đã bị hủy.</Alert>}
             {t.operationBlocked && <Alert tone="critical" title="Chuyến đang tạm dừng">Có sự cố nghiêm trọng đang chờ Quản lý Logistics quyết định (tiếp tục / theo dõi / dừng / đổi tuyến).</Alert>}

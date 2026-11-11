@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { routeApi } from '../../api/endpoints';
 import { useCurrentUser } from '../../app/AuthContext';
 import { useAction } from '../../hooks/useAction';
@@ -56,6 +56,8 @@ function Detail({ r, reload }: { r: RouteDetail; reload: () => void }) {
   const { run } = useAction();
   const [stopModal, setStopModal] = useState<RouteStop | 'new' | null>(null);
   const [del, setDel] = useState<RouteStop | null>(null);
+  const [delRoute, setDelRoute] = useState(false);
+  const navigate = useNavigate();
   const [alt, setAlt] = useState<number | null>(null);
   const altDetail = useAsync(() => routeApi.get(alt as number), [alt], alt !== null);
 
@@ -63,11 +65,11 @@ function Detail({ r, reload }: { r: RouteDetail; reload: () => void }) {
     <>
       <PageHeader title={r.name} back={{ to: '/routes', label: 'Tuyến đường' }} subtitle={`${r.routeCode} · ${TransportModeLabels[r.transportMode]}`}
         meta={<StatusBadge status={r.status} labels={RouteStatusLabels} size="md" />}
-        actions={canEdit && <LinkButton to={`/routes/${r.id}/edit`} variant="outline" icon="bi-pencil">Sửa tuyến</LinkButton>} />
+        actions={canEdit && <><Button variant="danger-outline" icon="bi-trash" onClick={() => setDelRoute(true)}>Xóa tuyến</Button><LinkButton to={`/routes/${r.id}/edit`} variant="outline" icon="bi-pencil">Sửa tuyến</LinkButton></>} />
       <Card title="Sơ đồ tuyến" icon="bi-map" actions={r.alternatives.length > 0 && (
         <div style={{ width: 260 }}><SelectField size="sm" value={alt ?? ''} onChange={(v) => setAlt(v ? Number(v) : null)} placeholder="Hiện tuyến thay thế…" options={r.alternatives.map((a) => ({ value: a.id, label: `${a.routeCode} – ${a.name}` }))} /></div>
       )}>
-        <RouteMap stops={r.stops} alternative={alt !== null ? altDetail.data?.stops : undefined} height={340} />
+        <RouteMap stops={r.stops} alternative={alt !== null ? altDetail.data?.stops : undefined} height={380} estimate transportMode={r.transportMode} />
       </Card>
       <div className="app-grid app-grid-main">
         <Card title={`Điểm dừng (${r.stops.length})`} icon="bi-pin-map" flush actions={canEdit && <Button size="sm" icon="bi-plus-lg" onClick={() => setStopModal('new')}>Thêm điểm dừng</Button>}>
@@ -105,6 +107,9 @@ function Detail({ r, reload }: { r: RouteDetail; reload: () => void }) {
         </div>
       </div>
       {stopModal && <StopModal routeId={r.id} stop={stopModal === 'new' ? undefined : stopModal} onClose={() => setStopModal(null)} onSaved={reload} />}
+      <ConfirmDialog open={delRoute} onClose={() => setDelRoute(false)} tone="error" title="Xóa tuyến này?" confirmLabel="Xóa tuyến"
+        message="Tuyến chưa từng dùng sẽ bị xóa hẳn cùng các điểm dừng. Tuyến đã dùng cho chuyến (hoặc là tuyến thay thế của tuyến khác) sẽ chuyển sang 'Ngừng dùng' để giữ lịch sử. Không xóa được khi còn chuyến chưa kết thúc."
+        onConfirm={async () => { const res = await run(() => routeApi.remove(r.id), (x) => (x.archived ? 'Tuyến đã dùng nên được chuyển sang Ngừng dùng' : 'Đã xóa tuyến')); if (res?.archived) { reload(); } else { navigate('/routes'); } }} />
       <ConfirmDialog open={!!del} onClose={() => setDel(null)} tone="error" title="Xóa điểm dừng?" message={del ? `Điểm dừng “${del.name}” sẽ bị xóa khỏi tuyến.` : undefined} confirmLabel="Xóa"
         onConfirm={async () => { if (del) { await run(() => routeApi.deleteStop(r.id, del.id), 'Đã xóa điểm dừng'); reload(); } }} />
     </>

@@ -3,7 +3,7 @@ import { employeeApi } from '../../api/endpoints';
 import { useCurrentUser } from '../../app/AuthContext';
 import { useAction } from '../../hooks/useAction';
 import { useAsync } from '../../hooks/useAsync';
-import { Badge, Button, Cell, Checkbox, DataTable, Modal, PageHeader, PasswordField, SelectField, StatusBadge, TextField, enumOptions } from '../../components';
+import { Badge, Button, Cell, Checkbox, ConfirmDialog, DataTable, Modal, PageHeader, PasswordField, SelectField, StatusBadge, TextField, enumOptions } from '../../components';
 import { RoleLabels, RoleValues, StaffRoleLabels, StaffRoleValues, type Role, type StaffRole } from '../../types/enums';
 import type { Employee } from '../../types/api';
 import { formatDate } from '../../utils/format';
@@ -63,6 +63,8 @@ export function StaffPage() {
   const state = useAsync(() => employeeApi.list(role || undefined), [role]);
   const { run } = useAction();
   const [creating, setCreating] = useState(false);
+  const [removing, setRemoving] = useState<Employee | null>(null);
+  const canRemove = isManager || user.role === 'FLEET_ROUTE_COORDINATOR';
   return (
     <>
       <PageHeader title={isManager ? 'Nhân sự vận hành' : 'Tài xế & áp tải'} subtitle="Danh sách nhân viên, giấy phép và số chuyến đang được phân công."
@@ -76,11 +78,17 @@ export function StaffPage() {
           { key: 'a', header: 'Chứng chỉ', render: (e) => (e.airEscortCertified ? <Badge tone="info" icon="bi-airplane">Áp tải hàng không</Badge> : '—') },
           { key: 'c', header: 'Chuyến đang giao', align: 'right', sortValue: (e) => e.activeAssignments, render: (e) => e.activeAssignments },
           { key: 's', header: 'Trạng thái', render: (e) => <StatusBadge status={e.enabled ? 'ACTIVE' : 'INACTIVE'} labels={{ ACTIVE: 'Hoạt động', INACTIVE: 'Đã khóa' }} /> },
-          ...(isManager ? [{ key: 'x', header: '', render: (e: Employee) => (
-            <Button size="sm" variant={e.enabled ? 'danger-outline' : 'outline'} disabled={e.userId === user.id} onClick={async () => { await run(() => employeeApi.setEnabled(e.userId, !e.enabled), e.enabled ? 'Đã khóa tài khoản' : 'Đã mở khóa tài khoản'); state.reload(); }}>{e.enabled ? 'Khóa' : 'Mở khóa'}</Button>
+          ...(canRemove ? [{ key: 'x', header: '', render: (e: Employee) => (
+            <span className="app-row" style={{ gap: 6, justifyContent: 'flex-end' }}>
+              {isManager && <Button size="sm" variant={e.enabled ? 'danger-outline' : 'outline'} disabled={e.userId === user.id} onClick={async () => { await run(() => employeeApi.setEnabled(e.userId, !e.enabled), e.enabled ? 'Đã khóa tài khoản' : 'Đã mở khóa tài khoản'); state.reload(); }}>{e.enabled ? 'Khóa' : 'Mở khóa'}</Button>}
+              <Button size="sm" variant="danger-outline" icon="bi-trash" disabled={e.userId === user.id || (!isManager && e.role !== 'DRIVER_ESCORT')} title="Xóa nhân sự đã nghỉ việc / bị sa thải" onClick={() => setRemoving(e)}>Xóa</Button>
+            </span>
           ) }] : []),
         ]} />
       {creating && <CreateEmployee onClose={() => setCreating(false)} onSaved={state.reload} />}
+      <ConfirmDialog open={!!removing} onClose={() => setRemoving(null)} tone="error" confirmLabel="Xóa nhân sự" title="Xóa nhân sự này?"
+        message={removing ? `${removing.fullName} (${removing.employeeCode ?? removing.email}) sẽ bị khóa đăng nhập và ẩn khỏi danh sách phân công. Lịch sử các chuyến đã làm vẫn được giữ. Không xóa được nếu người này còn trong chuyến chưa kết thúc.` : undefined}
+        onConfirm={async () => { if (removing) { await run(() => employeeApi.remove(removing.userId), 'Đã xóa nhân sự'); state.reload(); } }} />
     </>
   );
 }

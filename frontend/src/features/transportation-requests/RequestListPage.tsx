@@ -4,7 +4,9 @@ import { requestApi } from '../../api/endpoints';
 import { useCurrentUser } from '../../app/AuthContext';
 import { useAsync } from '../../hooks/useAsync';
 import { useDebounced } from '../../hooks/useQueryState';
-import { Cell, DataTable, LinkButton, PageHeader, Pagination, SearchBox, StatusBadge, Tabs } from '../../components';
+import { useAction } from '../../hooks/useAction';
+import { refreshCounts } from '../../layouts/AppLayout';
+import { Button, Cell, ConfirmDialog, DataTable, LinkButton, PageHeader, Pagination, SearchBox, StatusBadge, Tabs } from '../../components';
 import { RequestStatusLabels, TransportModeLabels, TransportPurposeLabels, type RequestStatus } from '../../types/enums';
 import type { RequestSummary } from '../../types/api';
 import { formatDate } from '../../utils/format';
@@ -24,6 +26,12 @@ export function RequestListPage() {
   const statuses = group === 'custom' ? explicit : STATUS_GROUPS.find((g) => g.key === group)?.statuses ?? [];
   const state = useAsync(() => requestApi.list({ status: statuses, q: dq || undefined, page, size }), [group, statuses.join(','), dq, page, size]);
   const isCustomer = user.role === 'CUSTOMER';
+  const isManager = user.role === 'LOGISTICS_MANAGER';
+  const { run } = useAction();
+  const [removing, setRemoving] = useState<RequestSummary | null>(null);
+  const [cleanup, setCleanup] = useState(false);
+  // Khách xóa được yêu cầu nháp / đã hủy / bị từ chối; Manager xóa thêm yêu cầu đã hoàn tất.
+  const removable = (r: RequestSummary) => (isCustomer ? ['DRAFT', 'CANCELLED', 'REJECTED'] : isManager ? ['CANCELLED', 'REJECTED', 'COMPLETED'] : []).includes(r.status);
 
   const tabs = [
     ...STATUS_GROUPS.map((g) => ({ key: g.key, label: g.label })),
@@ -35,7 +43,7 @@ export function RequestListPage() {
       <PageHeader
         title="Yêu cầu vận chuyển"
         subtitle={isCustomer ? 'Theo dõi các yêu cầu bạn đã tạo, từ hồ sơ đến bàn giao.' : 'Danh sách yêu cầu theo quyền xử lý của bạn.'}
-        actions={isCustomer && <LinkButton to="/requests/new" icon="bi-plus-circle">Tạo yêu cầu vận chuyển</LinkButton>}
+        actions={<>{isManager && <Button variant="danger-outline" icon="bi-trash" onClick={() => setCleanup(true)}>Dọn yêu cầu đã hoàn tất</Button>}{isCustomer && <LinkButton to="/requests/new" icon="bi-plus-circle">Tạo yêu cầu vận chuyển</LinkButton>}</>}
       />
       <Tabs tabs={tabs} active={group} onChange={(k) => { setGroup(k); setPage(0); if (k !== 'custom') setParams({}, { replace: true }); }} />
       <DataTable<RequestSummary>
@@ -58,9 +66,16 @@ export function RequestListPage() {
           { key: 'date', header: 'Khởi hành', sortValue: (r) => r.requestedDepartureDate, render: (r) => formatDate(r.requestedDepartureDate) },
           { key: 'value', header: 'Giá trị khai báo', align: 'right', sortValue: (r) => r.declaredValueTotal, render: (r) => <Money value={r.declaredValueTotal} currency={r.currency} /> },
           { key: 'st', header: 'Trạng thái', render: (r) => <StatusBadge status={r.status} labels={RequestStatusLabels} /> },
+          ...(isCustomer || isManager ? [{ key: 'x', header: '', align: 'right' as const, render: (r: RequestSummary) => (removable(r) ? <Button size="sm" variant="danger-outline" icon="bi-trash" title="Xóa yêu cầu" onClick={(e) => { e.stopPropagation(); setRemoving(r); }}>Xóa</Button> : null) }] : []),
         ]}
         footer={state.data && <Pagination page={state.data.page} size={state.data.size} totalElements={state.data.totalElements} totalPages={state.data.totalPages} onPage={setPage} onSize={(s) => { setSize(s); setPage(0); }} />}
       />
+      <ConfirmDialog open={!!removing} onClose={() => setRemoving(null)} tone="error" confirmLabel="Xóa yêu cầu" title="Xóa yêu cầu này?"
+        message={removing ? `Yêu cầu ${removing.requestNumber} sẽ được lưu trữ: biến mất khỏi danh sách nhưng lịch sử và số liệu báo cáo vẫn được giữ.` : undefined}
+        onConfirm={async () => { if (removing) { await run(() => requestApi.archive(removing.id), 'Đã xóa yêu cầu'); refreshCounts(); state.reload(); } }} />
+      <ConfirmDialog open={cleanup} onClose={() => setCleanup(false)} tone="error" confirmLabel="Dọn tất cả" title="Dọn mọi yêu cầu đã hoàn tất / hủy / bị từ chối?"
+        message="Các yêu cầu ở trạng thái Hoàn tất, Đã hủy hoặc Bị từ chối sẽ được lưu trữ (ẩn khỏi danh sách). Báo cáo và lịch sử vẫn được giữ."
+        onConfirm={async () => { await run(() => requestApi.archiveFinished(0), (r) => `Đã dọn ${r.archived} yêu cầu`); refreshCounts(); state.reload(); }} />
     </>
   );
 }

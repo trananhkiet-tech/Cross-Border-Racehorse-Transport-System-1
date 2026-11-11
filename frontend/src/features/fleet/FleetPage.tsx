@@ -136,7 +136,8 @@ export function FleetPage() {
           { key: 'cap', header: 'Sức chứa', align: 'right', sortValue: (v) => v.capacityHorses, render: (v) => `${v.capacityHorses} ngựa` },
           { key: 'f', header: 'Tiện ích', render: (v) => <span className="app-row" style={{ gap: 6 }}>{v.climateControlled && <Icon name="bi-thermometer-snow" title="Điều hòa" />}{v.cameraMonitoring && <Icon name="bi-camera-video" title="Camera" />}</span> },
           { key: 'l', header: 'Vị trí', render: (v) => v.currentLocation ?? '—' },
-          { key: 'm', header: 'Bảo dưỡng tới', sortValue: (v) => v.nextMaintenanceDate, render: (v) => <Cell main={formatDate(v.nextMaintenanceDate)} sub={v.maintenanceDue ? 'Đến hạn' : undefined} /> },
+          { key: 'lm', header: 'Bảo dưỡng gần nhất', sortValue: (v) => v.lastMaintenanceDate, render: (v) => formatDate(v.lastMaintenanceDate) },
+          { key: 'm', header: 'Bảo dưỡng tiếp theo', sortValue: (v) => v.nextMaintenanceDate, render: (v) => <Cell main={formatDate(v.nextMaintenanceDate)} sub={v.maintenanceDue ? 'Đến hạn' : undefined} /> },
           { key: 's', header: 'Trạng thái', render: (v) => <StatusBadge status={v.status} labels={VehicleStatusLabels} /> },
         ]} />
       {sel && <VehicleDrawer v={sel} canEdit={canEdit} onClose={() => setSel(null)} onChanged={state.reload} />}

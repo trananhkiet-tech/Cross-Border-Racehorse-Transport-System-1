@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { employeeApi, tripApi, vehicleApi } from '../../api/endpoints';
 import { useAction } from '../../hooks/useAction';
 import { useAsync } from '../../hooks/useAsync';
-import { Alert, Button, Modal, NumberField, SelectField, TextAreaField, TextField, enumOptions } from '../../components';
+import { Alert, Button, Modal, NumberField, SelectField, TextAreaField, TextField } from '../../components';
 import {
-  StaffRoleLabels, StaffRoleValues, TrackingEventTypeLabels, TripStatusLabels, VehicleTypeLabels,
+  StaffRoleLabels, TrackingEventTypeLabels, TripStatusLabels, VehicleTypeLabels,
   type StaffRole, type TrackingEventType, type TripStatus,
 } from '../../types/enums';
 import type { TripDetail } from '../../types/api';
 import { toLocalInput } from '../../utils/format';
+import { rolesFor } from '../../utils/staff';
 import { hasErrors } from '../common/validation';
 
 interface P { open: boolean; trip: TripDetail; onClose: () => void; onDone: () => void }
@@ -51,9 +52,14 @@ export function AssignStaffModal({ open, trip, onClose, onDone }: P) {
   const [role, setRole] = useState<StaffRole>('DRIVER');
   const [err, setErr] = useState<string>();
   const { run, busy } = useAction();
-  const staff = useAsync(() => employeeApi.list('DRIVER_ESCORT'), [open], open);
+  // Chỉ nhân sự hợp lệ và rảnh trong khung giờ của chuyến này.
+  const staff = useAsync(() => employeeApi.available(trip.plannedDeparture, trip.plannedArrival, trip.id), [open, trip.id, trip.plannedDeparture, trip.plannedArrival], open);
   useEffect(() => { if (open) { setStaffId(undefined); setRole('DRIVER'); setErr(undefined); } }, [open]);
   const assigned = new Set(trip.staff.map((s) => s.staffId));
+  const candidates = (staff.data ?? []).filter((e) => !assigned.has(e.userId));
+  const picked = candidates.find((e) => e.userId === staffId);
+  const roleOptions = rolesFor(picked?.staffRole);
+  useEffect(() => { if (!roleOptions.includes(role)) setRole(roleOptions[0]); }, [staffId]); // eslint-disable-line react-hooks/exhaustive-deps
   const submit = async () => {
     if (!staffId) { setErr('Chọn nhân sự'); return; }
     try { await run(() => tripApi.assignStaff(trip.id, staffId, role), 'Đã phân công nhân sự'); onClose(); onDone(); } catch { /* toast */ }
@@ -63,8 +69,9 @@ export function AssignStaffModal({ open, trip, onClose, onDone }: P) {
       <div className="ir-stack">
         {staff.error && <Alert tone="error">{staff.error}</Alert>}
         <SelectField label="Nhân sự" required value={staffId} onChange={(v) => setStaffId(v ? Number(v) : undefined)} placeholder="Chọn lái xe / hộ tống" error={err}
-          options={(staff.data ?? []).filter((e) => e.enabled && !assigned.has(e.userId)).map((e) => ({ value: String(e.userId), label: `${e.fullName}${e.staffRole ? ` · ${StaffRoleLabels[e.staffRole]}` : ''} · ${e.activeAssignments} chuyến đang phụ trách` }))} />
-        <SelectField label="Vai trò trong chuyến" required value={role} onChange={(v) => setRole(v as StaffRole)} options={enumOptions(StaffRoleValues, StaffRoleLabels)} />
+          options={candidates.map((e) => ({ value: String(e.userId), label: `${e.fullName}${e.staffRole ? ` · ${StaffRoleLabels[e.staffRole]}` : ''} · ${e.activeAssignments} chuyến đang phụ trách` }))} />
+        {!staff.loading && !staff.error && candidates.length === 0 && <Alert tone="warning">Không có nhân sự hợp lệ và rảnh trong khung giờ của chuyến này.</Alert>}
+        <SelectField label="Vai trò trong chuyến" required value={role} onChange={(v) => setRole(v as StaffRole)} options={roleOptions.map((r) => ({ value: r, label: StaffRoleLabels[r] }))} />
       </div>
     </Modal>
   );
@@ -105,9 +112,20 @@ export function CheckpointModal({ open, trip, onClose, onDone }: P) {
   const [loc, setLoc] = useState('');
   const [delay, setDelay] = useState<number | undefined>();
   const [note, setNote] = useState('');
+  const [gps, setGps] = useState<{ lat: number; lng: number } | null>(null);
+  const [gpsMsg, setGpsMsg] = useState('');
   const [err, setErr] = useState<Record<string, string | undefined>>({});
   const { run, busy } = useAction();
-  useEffect(() => { if (open) { setType('CHECKPOINT_ARRIVED'); setStopId(undefined); setLoc(trip.currentLocation ?? ''); setDelay(undefined); setNote(''); setErr({}); } }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+  const getGps = () => {
+    if (!navigator.geolocation) { setGpsMsg('Thiết bị không hỗ trợ định vị.'); return; }
+    setGpsMsg('Đang lấy vị trí…');
+    navigator.geolocation.getCurrentPosition(
+      (p) => { setGps({ lat: Number(p.coords.latitude.toFixed(6)), lng: Number(p.coords.longitude.toFixed(6)) }); setGpsMsg(''); },
+      () => { setGps(null); setGpsMsg('Không lấy được vị trí – hãy cho phép trình duyệt truy cập vị trí.'); },
+      { enableHighAccuracy: true, timeout: 10000 },
+    );
+  };
+  useEffect(() => { if (open) { setType('CHECKPOINT_ARRIVED'); setStopId(undefined); setLoc(trip.currentLocation ?? ''); setDelay(undefined); setNote(''); setGps(null); setGpsMsg(''); setErr({}); } }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   const needsStop = type === 'CHECKPOINT_ARRIVED' || type === 'CHECKPOINT_DEPARTED';
   const submit = async () => {
     const e = {
@@ -118,17 +136,21 @@ export function CheckpointModal({ open, trip, onClose, onDone }: P) {
     setErr(e);
     if (hasErrors(e)) return;
     try {
-      await run(() => tripApi.checkpoint(trip.id, { eventType: type, routeStopId: stopId, location: loc.trim() || undefined, delayMinutes: delay, note: note.trim() || undefined }), 'Đã ghi nhận sự kiện hành trình');
+      await run(() => tripApi.checkpoint(trip.id, { eventType: type, routeStopId: stopId, location: loc.trim() || undefined, latitude: gps?.lat, longitude: gps?.lng, delayMinutes: delay, note: note.trim() || undefined }), 'Đã ghi nhận sự kiện hành trình');
       onClose(); onDone();
     } catch { /* toast */ }
   };
   const types = (['CHECKPOINT_ARRIVED', 'CHECKPOINT_DEPARTED', 'LOCATION_UPDATE', 'DELAY', 'NOTE'] as TrackingEventType[]);
   return (
-    <Modal open={open} title="Cập nhật hành trình" description="Ghi nhận vị trí, điểm dừng hoặc thời gian trễ. Vị trí được nhập thủ công (không dùng GPS)." icon="bi-geo-alt" onClose={onClose} onSubmit={submit} busy={busy} footer={<Footer busy={busy} onClose={onClose} label="Ghi nhận" />}>
+    <Modal open={open} title="Cập nhật hành trình" description="Ghi nhận vị trí, điểm dừng hoặc thời gian trễ. Có thể gắn GPS của thiết bị để xe hiện trên bản đồ thật." icon="bi-geo-alt" onClose={onClose} onSubmit={submit} busy={busy} footer={<Footer busy={busy} onClose={onClose} label="Ghi nhận" />}>
       <div className="ir-stack">
         <SelectField label="Loại sự kiện" required value={type} onChange={(v) => setType(v as TrackingEventType)} options={types.map((t) => ({ value: t, label: TrackingEventTypeLabels[t] }))} />
         {needsStop && <SelectField label="Điểm dừng" required value={stopId} onChange={(v) => setStopId(v ? Number(v) : undefined)} placeholder="Chọn điểm dừng" error={err.stop} options={trip.stops.map((s) => ({ value: String(s.id), label: `${s.stopOrder}. ${s.name}` }))} />}
         <TextField label="Vị trí hiện tại" optional={needsStop || type === 'NOTE'} required={!needsStop && type !== 'NOTE'} value={loc} onChange={setLoc} maxLength={200} error={err.loc} />
+        <div className="ir-gps-row">
+          <Button icon="bi-crosshair" onClick={getGps}>Lấy vị trí GPS của thiết bị</Button>
+          <span className="ir-muted app-text-sm">{gps ? `Đã lấy: ${gps.lat}, ${gps.lng}` : gpsMsg || 'Không bắt buộc'}</span>
+        </div>
         <NumberField label="Trễ (phút)" required={type === 'DELAY'} optional={type !== 'DELAY'} min={0} value={delay} onChange={setDelay} error={err.delay} />
         <TextAreaField label="Ghi chú" optional rows={2} value={note} onChange={setNote} maxLength={1000} />
       </div>

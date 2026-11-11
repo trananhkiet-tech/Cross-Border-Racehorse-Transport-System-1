@@ -17,7 +17,7 @@ public interface TransportationRequestRepository extends JpaRepository<Transport
     @Query("""
             select r from TransportationRequest r
             where (:customerId is null or r.customer.id = :customerId)
-              and r.status in :statuses
+              and r.status in :statuses and r.archived = false
               and (:q is null or lower(r.requestNumber) like lower(concat('%', :q, '%'))
                    or lower(r.customer.fullName) like lower(concat('%', :q, '%'))
                    or lower(r.destinationAddress) like lower(concat('%', :q, '%'))
@@ -26,6 +26,8 @@ public interface TransportationRequestRepository extends JpaRepository<Transport
     Page<TransportationRequest> search(@Param("customerId") Long customerId,
                                        @Param("statuses") Collection<RequestStatus> statuses,
                                        @Param("q") String q, Pageable pageable);
+
+    List<TransportationRequest> findByStatusInAndArchivedFalse(Collection<RequestStatus> statuses);
 
     long countByStatus(RequestStatus status);
 

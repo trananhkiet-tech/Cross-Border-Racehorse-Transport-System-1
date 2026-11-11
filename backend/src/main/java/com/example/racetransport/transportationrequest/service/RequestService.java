@@ -1,5 +1,6 @@
 package com.example.racetransport.transportationrequest.service;
 
+import java.time.LocalDateTime;
 import static com.example.racetransport.transportationrequest.entity.RequestStatus.*;
 
 import com.example.racetransport.common.exception.ForbiddenException;
@@ -494,5 +495,46 @@ public class RequestService {
             actions.add("PLAN_TRIP");
         }
         return actions;
+    }
+
+    // ================================================================== lưu trữ (xóa mềm)
+    private static final EnumSet<RequestStatus> CUSTOMER_REMOVABLE = EnumSet.of(DRAFT, CANCELLED, REJECTED);
+    private static final EnumSet<RequestStatus> MANAGER_REMOVABLE = EnumSet.of(CANCELLED, REJECTED, COMPLETED);
+
+    /**
+     * Xóa (lưu trữ) yêu cầu: khách xóa yêu cầu NHÁP/đã hủy/bị từ chối của mình; Manager xóa thêm yêu cầu đã hoàn tất.
+     * Yêu cầu còn đang xử lý phải hủy trước. Dữ liệu vẫn giữ cho báo cáo.
+     */
+    @Transactional
+    public void archive(UserPrincipal actor, Long id) {
+        TransportationRequest r = actor.isCustomer() ? access.loadOwned(actor, id) : access.load(id);
+        if (!actor.isCustomer() && !actor.isManager()) {
+            throw new ForbiddenException("Chỉ khách hàng hoặc Logistics Manager được xóa yêu cầu");
+        }
+        Guard.state(!Boolean.TRUE.equals(r.getArchived()), "Yêu cầu đã được lưu trữ");
+        Guard.state((actor.isManager() ? MANAGER_REMOVABLE : CUSTOMER_REMOVABLE).contains(r.getStatus()),
+                actor.isManager() ? "Chỉ xóa được yêu cầu đã hoàn tất, đã hủy hoặc bị từ chối; yêu cầu đang xử lý hãy hủy trước"
+                        : "Chỉ xóa được yêu cầu nháp, đã hủy hoặc bị từ chối; yêu cầu đang xử lý hãy hủy trước");
+        r.setArchived(true);
+        r.setArchivedAt(LocalDateTime.now(clock));
+    }
+
+    /** Manager dọn hàng loạt yêu cầu đã hoàn tất/hủy/từ chối không cập nhật từ {@code olderThanDays} ngày. */
+    @Transactional
+    public int archiveFinished(UserPrincipal actor, int olderThanDays) {
+        if (!actor.isManager()) {
+            throw new ForbiddenException("Chỉ Logistics Manager được dọn yêu cầu đã hoàn tất");
+        }
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime limit = now.minusDays(Math.max(olderThanDays, 0));
+        int n = 0;
+        for (TransportationRequest r : requests.findByStatusInAndArchivedFalse(MANAGER_REMOVABLE)) {
+            if (r.getUpdatedAt() == null || !r.getUpdatedAt().isAfter(limit)) {
+                r.setArchived(true);
+                r.setArchivedAt(now);
+                n++;
+            }
+        }
+        return n;
     }
 }

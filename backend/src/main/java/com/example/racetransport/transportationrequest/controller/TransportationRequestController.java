@@ -1,5 +1,6 @@
 package com.example.racetransport.transportationrequest.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import com.example.racetransport.common.response.PageResponse;
 import com.example.racetransport.security.UserPrincipal;
 import com.example.racetransport.transportationrequest.dto.RequestDtos.DecisionRequest;
@@ -121,5 +122,21 @@ public class TransportationRequestController {
     public RequestDetail reject(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
                                 @Valid @RequestBody DecisionRequest body) {
         return service.reject(actor, id, body);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('CUSTOMER','LOGISTICS_MANAGER')")
+    @Operation(summary = "Xóa (lưu trữ) yêu cầu nháp/đã hủy/bị từ chối/đã hoàn tất – giữ lịch sử cho báo cáo")
+    public java.util.Map<String, Boolean> archive(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id) {
+        service.archive(actor, id);
+        return java.util.Map.of("archived", true);
+    }
+
+    @PostMapping("/archive-finished")
+    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
+    @Operation(summary = "Dọn hàng loạt yêu cầu đã hoàn tất/hủy/bị từ chối")
+    public java.util.Map<String, Integer> archiveFinished(@AuthenticationPrincipal UserPrincipal actor,
+                                                          @RequestParam(defaultValue = "0") int olderThanDays) {
+        return java.util.Map.of("archived", service.archiveFinished(actor, olderThanDays));
     }
 }

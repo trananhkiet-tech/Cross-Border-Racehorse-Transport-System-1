@@ -121,26 +121,4 @@ public class ClaimController {
                              @Valid @RequestBody(required = false) CloseClaimRequest req) {
         return service.close(actor, id, req == null ? null : req.note());
     }
-    @PostMapping("/{id}/review")
-    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
-    @Operation(summary = "Ghi nhận định thẩm định; REQUEST_EVIDENCE → yêu cầu khách bổ sung")
-    public ClaimDetail review(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                              @Valid @RequestBody ReviewClaimRequest req) {
-        return service.review(actor, id, req);
-    }
-
-    @PostMapping("/{id}/approve")
-    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
-    @Operation(summary = "Duyệt toàn phần/một phần (approvedAmount ≤ claimedAmount)")
-    public ClaimDetail approve(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                               @Valid @RequestBody ApproveClaimRequest req) {
-        return service.approve(actor, id, req);
-    }
-
-    @PostMapping("/{id}/reject")
-    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
-    public ClaimDetail reject(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                              @Valid @RequestBody RejectClaimRequest req) {
-        return service.reject(actor, id, req.decisionNote());
-    }
 }

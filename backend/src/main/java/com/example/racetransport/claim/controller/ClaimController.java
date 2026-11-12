@@ -51,15 +51,16 @@ public class ClaimController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ClaimDetail create(@AuthenticationPrincipal UserPrincipal actor, @Valid @RequestBody CreateClaimRequest req) {
+    public ClaimDetail create(@AuthenticationPrincipal UserPrincipal actor,
+            @Valid @RequestBody CreateClaimRequest req) {
         return service.create(actor, req);
     }
 
     @GetMapping
     public PageResponse<ClaimSummary> list(@AuthenticationPrincipal UserPrincipal actor,
-                                           @RequestParam(required = false) List<ClaimStatus> status,
-                                           @RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(required = false) List<ClaimStatus> status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
         return service.list(actor, status, page, size);
     }
 
@@ -71,15 +72,15 @@ public class ClaimController {
     @PostMapping(value = "/{id}/evidence", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public ClaimDetail evidence(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                                @RequestPart("file") MultipartFile file, @RequestParam EvidenceType evidenceType,
-                                @RequestParam(required = false) String notes) {
+            @RequestPart("file") MultipartFile file, @RequestParam EvidenceType evidenceType,
+            @RequestParam(required = false) String notes) {
         return service.addEvidence(actor, id, file, evidenceType, notes);
     }
 
     @GetMapping("/{id}/evidence/{evidenceId}/file")
     public ResponseEntity<Resource> evidenceFile(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                                                 @PathVariable Long evidenceId,
-                                                 @RequestParam(defaultValue = "true") boolean inline) {
+            @PathVariable Long evidenceId,
+            @RequestParam(defaultValue = "true") boolean inline) {
         StoredFile f = service.evidenceFile(actor, id, evidenceId);
         return FileResponses.of(f, service.open(f), inline);
     }
@@ -88,7 +89,7 @@ public class ClaimController {
     @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
     @Operation(summary = "Ghi nhận định thẩm định; REQUEST_EVIDENCE → yêu cầu khách bổ sung")
     public ClaimDetail review(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                              @Valid @RequestBody ReviewClaimRequest req) {
+            @Valid @RequestBody ReviewClaimRequest req) {
         return service.review(actor, id, req);
     }
 
@@ -96,29 +97,31 @@ public class ClaimController {
     @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
     @Operation(summary = "Duyệt toàn phần/một phần (approvedAmount ≤ claimedAmount)")
     public ClaimDetail approve(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                               @Valid @RequestBody ApproveClaimRequest req) {
+            @Valid @RequestBody ApproveClaimRequest req) {
         return service.approve(actor, id, req);
     }
 
     @PostMapping("/{id}/reject")
     @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
     public ClaimDetail reject(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                              @Valid @RequestBody RejectClaimRequest req) {
+            @Valid @RequestBody RejectClaimRequest req) {
         return service.reject(actor, id, req.decisionNote());
     }
 
+    // checking the settlement of the claim, if the claim is approved, then the
+    // logistics manager can settle the claim
     @PostMapping("/{id}/settlement")
     @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
     @Operation(summary = "Ghi chi trả bồi thường (mô phỏng)")
     public ClaimDetail settle(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                              @Valid @RequestBody SettlementRequest req) {
+            @Valid @RequestBody SettlementRequest req) {
         return service.settle(actor, id, req);
     }
 
     @PostMapping("/{id}/close")
     @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
     public ClaimDetail close(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
-                             @Valid @RequestBody(required = false) CloseClaimRequest req) {
+            @Valid @RequestBody(required = false) CloseClaimRequest req) {
         return service.close(actor, id, req == null ? null : req.note());
     }
 }

@@ -118,4 +118,19 @@ public class NotificationService {
     private static String truncate(String s, int max) {
         return s == null || s.length() <= max ? s : s.substring(0, max - 1) + "…";
     }
+
+    /** Xóa một thông báo của chính người dùng. */
+    @Transactional
+    public void delete(UserPrincipal actor, Long id) {
+        Notification n = repository.findById(id)
+                .filter(x -> x.getRecipient().getId().equals(actor.getId()))
+                .orElseThrow(() -> new NotFoundException("Không tìm thấy thông báo"));
+        repository.delete(n);
+    }
+
+    /** Xóa mọi thông báo ĐÃ ĐỌC của người dùng; thông báo chưa đọc được giữ lại. */
+    @Transactional
+    public int deleteRead(UserPrincipal actor) {
+        return repository.deleteRead(actor.getId());
+    }
 }

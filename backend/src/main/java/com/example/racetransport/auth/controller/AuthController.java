@@ -1,9 +1,13 @@
 package com.example.racetransport.auth.controller;
 
 import com.example.racetransport.auth.dto.AuthDtos.AuthResponse;
+import com.example.racetransport.auth.dto.AuthDtos.ForgotPasswordRequest;
+import com.example.racetransport.auth.dto.AuthDtos.ForgotPasswordResponse;
 import com.example.racetransport.auth.dto.AuthDtos.LoginRequest;
 import com.example.racetransport.auth.dto.AuthDtos.RegisterRequest;
+import com.example.racetransport.auth.dto.AuthDtos.ResetPasswordRequest;
 import com.example.racetransport.auth.service.AuthService;
+import com.example.racetransport.auth.service.PasswordResetService;
 import com.example.racetransport.security.UserPrincipal;
 import com.example.racetransport.user.dto.UserDtos.UserSummary;
 import com.example.racetransport.user.service.UserService;
@@ -25,10 +29,12 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final PasswordResetService passwordReset;
 
-    public AuthController(AuthService authService, UserService userService) {
+    public AuthController(AuthService authService, UserService userService, PasswordResetService passwordReset) {
         this.authService = authService;
         this.userService = userService;
+        this.passwordReset = passwordReset;
     }
 
     /** Public: tạo tài khoản CUSTOMER. */
@@ -42,6 +48,19 @@ public class AuthController {
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginRequest req) {
         return authService.login(req);
+    }
+
+    /** Public: yêu cầu đặt lại mật khẩu (luôn trả cùng một thông báo). */
+    @PostMapping("/forgot-password")
+    public ForgotPasswordResponse forgotPassword(@Valid @RequestBody ForgotPasswordRequest req) {
+        return passwordReset.requestReset(req.email());
+    }
+
+    /** Public: đặt mật khẩu mới bằng token trong email. */
+    @PostMapping("/reset-password")
+    public java.util.Map<String, String> resetPassword(@Valid @RequestBody ResetPasswordRequest req) {
+        passwordReset.resetPassword(req.token(), req.newPassword());
+        return java.util.Map.of("message", "Đã đặt lại mật khẩu. Bạn có thể đăng nhập với mật khẩu mới.");
     }
 
     /** Mọi role đã đăng nhập. */

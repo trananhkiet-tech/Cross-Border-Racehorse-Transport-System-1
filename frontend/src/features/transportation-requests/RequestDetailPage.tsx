@@ -195,7 +195,8 @@ export function RequestDetailPage() {
           {tab === 'compliance' && (
             <Card>
               <AsyncView state={checklist}>
-                {(c) => <ChecklistPanel checklist={c} canUpload={user.role === 'CUSTOMER' || user.role === 'TRANSPORT_SPECIALIST'} onChanged={() => { checklist.reload(); state.reload(); }} />}
+                {/* Chỉ khách hàng tải tài liệu lên; chuyên viên vận chuyển chỉ rà soát và cập nhật trạng thái mục. */}
+                {(c) => <ChecklistPanel checklist={c} canUpload={user.role === 'CUSTOMER'} onChanged={() => { checklist.reload(); state.reload(); }} />}
               </AsyncView>
             </Card>
           )}

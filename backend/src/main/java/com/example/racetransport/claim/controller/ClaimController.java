@@ -121,4 +121,19 @@ public class ClaimController {
                              @Valid @RequestBody(required = false) CloseClaimRequest req) {
         return service.close(actor, id, req == null ? null : req.note());
     }
+
+    @PostMapping("/{id}/settlementt")
+    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
+    @Operation(summary = "Ghi chi trả bồi thường (mô phỏng)")
+    public ClaimDetail settle(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
+                              @Valid @RequestBody SettlementRequest req) {
+        return service.settle(actor, id, req);
+    }
+
+    @PostMapping("/{id}/close")
+    @PreAuthorize("hasRole('LOGISTICS_MANAGER')")
+    public ClaimDetail close(@AuthenticationPrincipal UserPrincipal actor, @PathVariable Long id,
+                             @Valid @RequestBody(required = false) CloseClaimRequest req) {
+        return service.close(actor, id, req == null ? null : req.note());
+    }
 }

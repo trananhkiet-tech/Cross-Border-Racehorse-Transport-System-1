@@ -30,4 +30,16 @@ public final class AuthDtos {
             @NotBlank String password) { }
 
     public record AuthResponse(String accessToken, String tokenType, long expiresIn, UserSummary user) { }
+
+    /** Quên mật khẩu: luôn trả cùng một thông báo, không tiết lộ email có tồn tại hay không. */
+    public record ForgotPasswordRequest(@NotBlank @Email @Size(max = 150) String email) { }
+
+    /** {@code devResetToken} chỉ có khi bật app.password-reset.expose-token (môi trường dev, chưa cấu hình mail). */
+    public record ForgotPasswordResponse(String message, String devResetToken) { }
+
+    public record ResetPasswordRequest(
+            @NotBlank @Size(max = 200) String token,
+            @NotBlank @Size(min = 8, max = 72, message = "Mật khẩu từ 8 đến 72 ký tự")
+            @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$", message = "Mật khẩu phải có cả chữ và số")
+            String newPassword) { }
 }

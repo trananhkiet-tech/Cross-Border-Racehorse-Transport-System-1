@@ -7,6 +7,8 @@ import com.example.racetransport.common.exception.NotFoundException;
 import com.example.racetransport.common.util.Countries;
 import com.example.racetransport.common.util.Guard;
 import com.example.racetransport.security.UserPrincipal;
+import com.example.racetransport.trip.entity.TripStatus;
+import com.example.racetransport.trip.repository.TripStaffAssignmentRepository;
 import com.example.racetransport.user.dto.UserDtos.ChangePasswordRequest;
 import com.example.racetransport.user.dto.UserDtos.CreateEmployeeRequest;
 import com.example.racetransport.user.dto.UserDtos.CustomerProfileResponse;
@@ -24,6 +26,8 @@ import com.example.racetransport.user.repository.AppUserRepository;
 import com.example.racetransport.user.repository.CustomerProfileRepository;
 import com.example.racetransport.user.repository.EmployeeProfileRepository;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,17 +41,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
 
+    /** Trạng thái chuyến được coi là "đang được giao" khi đếm phân công. */
+    public static final EnumSet<TripStatus> ACTIVE_TRIP_STATUSES = EnumSet.complementOf(
+            EnumSet.of(TripStatus.DELIVERED, TripStatus.CANCELLED));
+
     private final AppUserRepository users;
     private final CustomerProfileRepository customers;
     private final EmployeeProfileRepository employees;
+    private final TripStaffAssignmentRepository assignments;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(AppUserRepository users, CustomerProfileRepository customers,
-                       EmployeeProfileRepository employees,
+                       EmployeeProfileRepository employees, TripStaffAssignmentRepository assignments,
                        PasswordEncoder passwordEncoder) {
         this.users = users;
         this.customers = customers;
         this.employees = employees;
+        this.assignments = assignments;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -134,7 +144,41 @@ public class UserService {
         }
         Map<Long, EmployeeProfile> profiles = employees.findByUserIdIn(list.stream().map(AppUser::getId).toList())
                 .stream().collect(Collectors.toMap(p -> p.getUser().getId(), Function.identity()));
-        return list.stream().map(u -> toEmployeeResponse(u, profiles.get(u.getId()))).toList();
+        return list.stream().filter(u -> !isArchived(profiles.get(u.getId())))
+                .map(u -> toEmployeeResponse(u, profiles.get(u.getId()))).toList();
+    }
+
+    private static boolean isArchived(EmployeeProfile p) {
+        return p != null && Boolean.TRUE.equals(p.getArchived());
+    }
+
+    /**
+     * Nhân sự CÓ THỂ phân công cho khung giờ [from, to]: tài khoản DRIVER_ESCORT đang hoạt động, có hồ sơ chuyên môn,
+     * tài xế phải có giấy phép còn hạn đến hết chuyến, và không bận chuyến khác trùng khung giờ.
+     * Người không hợp lệ / đang bận bị loại khỏi danh sách (excludeTripId = chuyến đang chỉnh, được bỏ qua khi xét trùng lịch).
+     */
+    @Transactional(readOnly = true)
+    public List<EmployeeResponse> availableStaff(LocalDateTime from, LocalDateTime to, Long excludeTripId) {
+        Guard.input(from != null && to != null && to.isAfter(from), "Khung giờ không hợp lệ");
+        long tripId = excludeTripId == null ? -1L : excludeTripId;
+        List<AppUser> list = users.findByRoleOrderByFullNameAsc(Role.DRIVER_ESCORT).stream()
+                .filter(u -> Boolean.TRUE.equals(u.getEnabled())).toList();
+        Map<Long, EmployeeProfile> profiles = employees.findByUserIdIn(list.stream().map(AppUser::getId).toList())
+                .stream().collect(Collectors.toMap(p -> p.getUser().getId(), Function.identity(), (a, b) -> a));
+        return list.stream()
+                .filter(u -> {
+                    EmployeeProfile p = profiles.get(u.getId());
+                    if (p == null || p.getStaffRole() == null || isArchived(p)) {
+                        return false;
+                    }
+                    if (p.getStaffRole() == StaffRole.DRIVER
+                            && (p.getLicenseNumber() == null || p.getLicenseNumber().isBlank()
+                            || (p.getLicenseExpiry() != null && p.getLicenseExpiry().isBefore(to.toLocalDate())))) {
+                        return false;
+                    }
+                    return !assignments.existsStaffOverlap(u.getId(), tripId, from, to);
+                })
+                .map(u -> toEmployeeResponse(u, profiles.get(u.getId()))).toList();
     }
 
     @Transactional
@@ -198,8 +242,8 @@ public class UserService {
     }
 
     private EmployeeResponse toEmployeeResponse(AppUser u, EmployeeProfile p) {
-        // Số chuyến đang phụ trách do module Trip (user3) bổ sung khi merge; bản main chưa phụ thuộc module Trip.
-        long active = 0;
+        long active = u.getRole() == Role.DRIVER_ESCORT
+                ? assignments.countByStaffIdAndTripStatusIn(u.getId(), ACTIVE_TRIP_STATUSES) : 0;
         return new EmployeeResponse(u.getId(), u.getEmail(), u.getFullName(), u.getPhone(), u.getRole(),
                 Boolean.TRUE.equals(u.getEnabled()),
                 p == null ? null : p.getEmployeeCode(), p == null ? null : p.getDepartment(),
@@ -222,5 +266,36 @@ public class UserService {
     /** Dùng cho validate phân công. */
     public StaffRole staffRoleOf(Long userId) {
         return employees.findByUserId(userId).map(EmployeeProfile::getStaffRole).orElse(null);
+    }
+
+    /**
+     * Xóa (lưu trữ) hồ sơ nhân sự đã nghỉ việc/bị sa thải: khóa đăng nhập và ẩn khỏi danh sách phân công.
+     * Manager xóa được mọi nhân viên (trừ chính mình); Điều phối viên chỉ xóa được tài xế/áp tải.
+     * Không xóa khi người đó còn trong chuyến chưa kết thúc – phải gỡ phân công trước. Lịch sử chuyến vẫn giữ nguyên.
+     */
+    @Transactional
+    public void removeEmployee(UserPrincipal actor, Long userId) {
+        AppUser user = getUser(userId);
+        Guard.input(user.getRole() != Role.CUSTOMER, "Chỉ áp dụng cho tài khoản nhân viên");
+        if (user.getId().equals(actor.getId())) {
+            throw new BadRequestException("Không thể xóa chính tài khoản của mình");
+        }
+        if (!actor.isManager() && user.getRole() != Role.DRIVER_ESCORT) {
+            throw new ForbiddenException("Điều phối viên chỉ được xóa tài xế / người áp tải");
+        }
+        EmployeeProfile p = employees.findByUserId(userId).orElse(null);
+        Guard.state(!isArchived(p), "Nhân sự đã được xóa trước đó");
+        Guard.state(assignments.countByStaffIdAndTripStatusIn(userId, ACTIVE_TRIP_STATUSES) == 0,
+                "Nhân sự đang được phân công cho chuyến chưa kết thúc; hãy gỡ phân công hoặc chờ chuyến kết thúc");
+        if (user.getRole() == Role.LOGISTICS_MANAGER) {
+            long remaining = users.findByRoleAndEnabledTrue(Role.LOGISTICS_MANAGER).stream()
+                    .filter(m -> !m.getId().equals(userId)).count();
+            Guard.state(remaining > 0, "Không thể xóa Logistics Manager cuối cùng của hệ thống");
+        }
+        user.setEnabled(false);
+        if (p != null) {
+            p.setArchived(true);
+            p.setArchivedAt(LocalDateTime.now());
+        }
     }
 }

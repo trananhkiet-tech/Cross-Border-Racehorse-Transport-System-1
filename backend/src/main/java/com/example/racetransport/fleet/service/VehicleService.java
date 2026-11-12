@@ -21,7 +21,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Quản lý đội xe: phương tiện, trạng thái sẵn sàng, bảo dưỡng. Lưu trữ thay vì xóa. */
+/** Quản lý đội xe: phương tiện, trạng thái sẵn sàng, bảo dưỡng. Lưu trữ thay vì xóa. (Module: Fleet & Route Coordinator) */
 @Service
 public class VehicleService {
 

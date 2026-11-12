@@ -5,13 +5,13 @@ import { toAppError } from '../../api/client';
 import { Alert, Button, PasswordField, TextField } from '../../components';
 import { EMAIL_RE } from '../common/validation';
 
-/** Tài khoản demo do DemoDataSeeder tạo (chỉ profile dev). Mật khẩu chung: Demo@123. */
+/** Tài khoản demo do DemoDataSeeder tạo (chỉ profile dev). Mật khẩu chung: 12345. */
 const DEMO_ACCOUNTS = [
-  { email: 'customer@irtms.vn', label: 'Khách hàng' },
-  { email: 'manager@irtms.vn', label: 'Quản lý Logistics' },
-  { email: 'specialist@irtms.vn', label: 'Chuyên viên vận chuyển' },
-  { email: 'coordinator@irtms.vn', label: 'Điều phối đội xe & tuyến' },
-  { email: 'driver@irtms.vn', label: 'Tài xế / Áp tải' },
+  { email: 'customer1@gmail.com', label: 'Khách hàng' },
+  { email: 'logistic1@gmail.com', label: 'Quản lý Logistics' },
+  { email: 'specialist1@gmail.com', label: 'Chuyên viên vận chuyển' },
+  { email: 'coordinator1@gmail.com', label: 'Điều phối đội xe & tuyến' },
+  { email: 'driver1@gmail.com', label: 'Tài xế / Áp tải' },
 ];
 
 export function LoginPage() {
@@ -55,6 +55,9 @@ export function LoginPage() {
       {formError && <Alert tone="error" title="Không đăng nhập được">{formError}</Alert>}
       <TextField label="Email" type="email" autoComplete="email" icon="bi-envelope" value={email} onChange={setEmail} error={errors.email} required placeholder="ten@congty.vn" />
       <PasswordField label="Mật khẩu" autoComplete="current-password" value={password} onChange={setPassword} error={errors.password} required />
+      <div style={{ textAlign: 'right', marginTop: -8 }}>
+        <Link to="/forgot-password" className="app-text-sm">Quên mật khẩu?</Link>
+      </div>
       <Button type="submit" size="lg" block loading={busy}>
         Đăng nhập
       </Button>
@@ -64,7 +67,7 @@ export function LoginPage() {
       {import.meta.env.DEV && (
         <div className="ir-card" style={{ padding: 12 }}>
           <div className="app-text-xs ir-muted" style={{ marginBottom: 8 }}>
-            Tài khoản demo (môi trường dev, mật khẩu <code>Demo@123</code>):
+            Tài khoản demo (môi trường dev, mật khẩu <code>12345</code>):
           </div>
           <div className="app-row" style={{ gap: 6 }}>
             {DEMO_ACCOUNTS.map((a) => (
@@ -75,7 +78,7 @@ export function LoginPage() {
                 style={{ paddingRight: 10, border: 0, cursor: 'pointer' }}
                 onClick={() => {
                   setEmail(a.email);
-                  setPassword('Demo@123');
+                  setPassword('12345');
                 }}
               >
                 {a.label}

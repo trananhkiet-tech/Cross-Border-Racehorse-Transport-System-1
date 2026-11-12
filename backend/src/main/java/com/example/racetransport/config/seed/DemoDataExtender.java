@@ -240,29 +240,29 @@ public class DemoDataExtender implements ApplicationRunner {
     // ================================================================== staff
     private void seedStaff() {
         // email, họ tên, mã NV, vai trò, số GPLX (null nếu không có), nơi đóng quân
-        staff("driver3@gmail.com", "Phạm Đức Thắng", "DR-003", StaffRole.DRIVER, "79C-446688", "TP. Hồ Chí Minh");
-        staff("driver4@gmail.com", "Nguyễn Văn Hậu", "DR-004", StaffRole.DRIVER, "79C-557799", "TP. Hồ Chí Minh");
-        staff("driver5@gmail.com", "Bùi Quang Huy", "DR-005", StaffRole.DRIVER, "43C-228811", "Đà Nẵng");
-        staff("driver6@gmail.com", "Đỗ Thanh Tùng", "DR-006", StaffRole.DRIVER, "92C-339922", "Cần Thơ");
-        staff("driver7@gmail.com", "Vũ Minh Hiếu", "DR-007", StaffRole.DRIVER, "29C-440033", "Hà Nội");
-        staff("driver8@gmail.com", "Somchai Prasert", "DR-008", StaffRole.DRIVER, "TH-BKK-118226", "Bangkok, Thái Lan");
-        staff("driver9@gmail.com", "Lim Wei Jie", "DR-009", StaffRole.DRIVER, "SG-KRJ-224466", "Singapore");
-        staff("driver10@gmail.com", "Ahmad Faizal", "DR-010", StaffRole.DRIVER, "MY-KUL-335577", "Kuala Lumpur, Malaysia");
-        staff("escort4@gmail.com", "Lê Thị Mai", "ES-004", StaffRole.ESCORT, null, "TP. Hồ Chí Minh");
-        staff("escort5@gmail.com", "Trần Quốc Khánh", "ES-005", StaffRole.ESCORT, null, "TP. Hồ Chí Minh");
-        staff("escort6@gmail.com", "Ngô Bảo Châu", "ES-006", StaffRole.ESCORT, null, "Đà Nẵng");
-        staff("escort7@gmail.com", "Phan Thị Thu", "ES-007", StaffRole.ESCORT, null, "Hà Nội");
-        staff("escort8@gmail.com", "Kenji Yamamoto", "ES-008", StaffRole.ESCORT, null, "Tokyo, Nhật Bản");
-        staff("escort9@gmail.com", "Park Ji-ho", "ES-009", StaffRole.ESCORT, null, "Seoul, Hàn Quốc");
-        staff("escort10@gmail.com", "Emily Carter", "ES-010", StaffRole.ESCORT, null, "Melbourne, Úc");
-        staff("escort11@gmail.com", "Khalid Al-Mansoori", "ES-011", StaffRole.ESCORT, null, "Dubai, UAE");
-        staff("escort12@gmail.com", "Oliver Hughes", "ES-012", StaffRole.ESCORT, null, "Newmarket, Anh");
-        staff("escort13@gmail.com", "Camille Laurent", "ES-013", StaffRole.ESCORT, null, "Chantilly, Pháp");
-        staff("escort14@gmail.com", "Sean O'Brien", "ES-014", StaffRole.ESCORT, null, "Curragh, Ireland");
-        staff("escort15@gmail.com", "Michael Thompson", "ES-015", StaffRole.ESCORT, null, "New York, Hoa Kỳ");
-        staff("leader2@gmail.com", "Hoàng Gia Bảo", "TL-002", StaffRole.TEAM_LEADER, "79C-661100", "TP. Hồ Chí Minh");
-        staff("leader3@gmail.com", "Trương Mỹ Linh", "TL-003", StaffRole.TEAM_LEADER, "43C-772211", "Đà Nẵng");
-        staff("leader4@gmail.com", "Chen Wei Ming", "TL-004", StaffRole.TEAM_LEADER, "HK-STN-883322", "Hồng Kông");
+        staff("driver3@irtms.vn", "Phạm Đức Thắng", "DR-003", StaffRole.DRIVER, "79C-446688", "TP. Hồ Chí Minh");
+        staff("driver4@irtms.vn", "Nguyễn Văn Hậu", "DR-004", StaffRole.DRIVER, "79C-557799", "TP. Hồ Chí Minh");
+        staff("driver5@irtms.vn", "Bùi Quang Huy", "DR-005", StaffRole.DRIVER, "43C-228811", "Đà Nẵng");
+        staff("driver6@irtms.vn", "Đỗ Thanh Tùng", "DR-006", StaffRole.DRIVER, "92C-339922", "Cần Thơ");
+        staff("driver7@irtms.vn", "Vũ Minh Hiếu", "DR-007", StaffRole.DRIVER, "29C-440033", "Hà Nội");
+        staff("driver8@irtms.vn", "Somchai Prasert", "DR-008", StaffRole.DRIVER, "TH-BKK-118226", "Bangkok, Thái Lan");
+        staff("driver9@irtms.vn", "Lim Wei Jie", "DR-009", StaffRole.DRIVER, "SG-KRJ-224466", "Singapore");
+        staff("driver10@irtms.vn", "Ahmad Faizal", "DR-010", StaffRole.DRIVER, "MY-KUL-335577", "Kuala Lumpur, Malaysia");
+        staff("escort4@irtms.vn", "Lê Thị Mai", "ES-004", StaffRole.ESCORT, null, "TP. Hồ Chí Minh");
+        staff("escort5@irtms.vn", "Trần Quốc Khánh", "ES-005", StaffRole.ESCORT, null, "TP. Hồ Chí Minh");
+        staff("escort6@irtms.vn", "Ngô Bảo Châu", "ES-006", StaffRole.ESCORT, null, "Đà Nẵng");
+        staff("escort7@irtms.vn", "Phan Thị Thu", "ES-007", StaffRole.ESCORT, null, "Hà Nội");
+        staff("escort8@irtms.vn", "Kenji Yamamoto", "ES-008", StaffRole.ESCORT, null, "Tokyo, Nhật Bản");
+        staff("escort9@irtms.vn", "Park Ji-ho", "ES-009", StaffRole.ESCORT, null, "Seoul, Hàn Quốc");
+        staff("escort10@irtms.vn", "Emily Carter", "ES-010", StaffRole.ESCORT, null, "Melbourne, Úc");
+        staff("escort11@irtms.vn", "Khalid Al-Mansoori", "ES-011", StaffRole.ESCORT, null, "Dubai, UAE");
+        staff("escort12@irtms.vn", "Oliver Hughes", "ES-012", StaffRole.ESCORT, null, "Newmarket, Anh");
+        staff("escort13@irtms.vn", "Camille Laurent", "ES-013", StaffRole.ESCORT, null, "Chantilly, Pháp");
+        staff("escort14@irtms.vn", "Sean O'Brien", "ES-014", StaffRole.ESCORT, null, "Curragh, Ireland");
+        staff("escort15@irtms.vn", "Michael Thompson", "ES-015", StaffRole.ESCORT, null, "New York, Hoa Kỳ");
+        staff("leader2@irtms.vn", "Hoàng Gia Bảo", "TL-002", StaffRole.TEAM_LEADER, "79C-661100", "TP. Hồ Chí Minh");
+        staff("leader3@irtms.vn", "Trương Mỹ Linh", "TL-003", StaffRole.TEAM_LEADER, "43C-772211", "Đà Nẵng");
+        staff("leader4@irtms.vn", "Chen Wei Ming", "TL-004", StaffRole.TEAM_LEADER, "HK-STN-883322", "Hồng Kông");
     }
 
     private void staff(String email, String name, String code, StaffRole staffRole, String license, String base) {

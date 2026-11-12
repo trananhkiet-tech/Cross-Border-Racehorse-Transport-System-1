@@ -131,21 +131,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class DemoDataSeeder implements ApplicationRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DemoDataSeeder.class);
-    public static final String DEMO_PASSWORD = "12345";
-
-    /** Email đăng nhập demo theo khóa nội bộ: customer1@, logistic1@, specialist1@, coordinator1@, driver1@, escort1@... (@gmail.com). */
-    static String demoEmail(String key) {
-        String local = switch (key) {
-            case "customer" -> "customer1";
-            case "manager" -> "logistic1";
-            case "specialist" -> "specialist1";
-            case "coordinator" -> "coordinator1";
-            case "driver" -> "driver1";
-            case "escort" -> "escort1";
-            default -> key;
-        };
-        return local + "@gmail.com";
-    }
+    public static final String DEMO_PASSWORD = "Demo@123";
 
     private final AppProperties props;
     private final AppClock clock;
@@ -275,18 +261,18 @@ public class DemoDataSeeder implements ApplicationRunner {
 
     // ================================================================== users
     private void seedUsers() {
-        customer("customer", "customer1@gmail.com", "Trần Thu Hà", "0903 118 226", "Sao Mai Racing Stable", CustomerType.STABLE,
+        customer("customer", "customer@irtms.vn", "Trần Thu Hà", "0903 118 226", "Sao Mai Racing Stable", CustomerType.STABLE,
                 "12 Nguyễn Văn Trỗi, Phú Nhuận, TP.HCM");
-        customer("customer2", "customer2@gmail.com", "Lâm Quốc Việt", "0912 456 789", "Phương Nam Equestrian", CustomerType.COMPANY,
+        customer("customer2", "customer2@irtms.vn", "Lâm Quốc Việt", "0912 456 789", "Phương Nam Equestrian", CustomerType.COMPANY,
                 "88 Võ Văn Kiệt, Quận 1, TP.HCM");
-        employee("manager", "logistic1@gmail.com", "Phạm Quốc Bảo", Role.LOGISTICS_MANAGER, "LM-001", "Điều hành vận tải", null, null);
-        employee("specialist", "specialist1@gmail.com", "Lê Thu Trang", Role.TRANSPORT_SPECIALIST, "TS-001", "Hồ sơ & tuân thủ", null, null);
-        employee("coordinator", "coordinator1@gmail.com", "Võ Minh Khang", Role.FLEET_ROUTE_COORDINATOR, "FC-001", "Đội xe & tuyến", null, null);
-        employee("driver", "driver1@gmail.com", "Lê Hoàng Nam", Role.DRIVER_ESCORT, "DR-001", "Vận hành", StaffRole.DRIVER, "79C-118226");
-        employee("escort", "escort1@gmail.com", "Nguyễn Minh Anh", Role.DRIVER_ESCORT, "ES-001", "Vận hành", StaffRole.ESCORT, null);
-        employee("driver2", "driver2@gmail.com", "Trần Văn Lộc", Role.DRIVER_ESCORT, "DR-002", "Vận hành", StaffRole.DRIVER, "79C-224466");
-        employee("escort2", "escort2@gmail.com", "Đặng Thu Hương", Role.DRIVER_ESCORT, "ES-002", "Vận hành", StaffRole.TEAM_LEADER, "79C-335577");
-        employee("escort3", "escort3@gmail.com", "Hồ Gia Huy", Role.DRIVER_ESCORT, "ES-003", "Vận hành", StaffRole.ESCORT, null);
+        employee("manager", "manager@irtms.vn", "Phạm Quốc Bảo", Role.LOGISTICS_MANAGER, "LM-001", "Điều hành vận tải", null, null);
+        employee("specialist", "specialist@irtms.vn", "Lê Thu Trang", Role.TRANSPORT_SPECIALIST, "TS-001", "Hồ sơ & tuân thủ", null, null);
+        employee("coordinator", "coordinator@irtms.vn", "Võ Minh Khang", Role.FLEET_ROUTE_COORDINATOR, "FC-001", "Đội xe & tuyến", null, null);
+        employee("driver", "driver@irtms.vn", "Lê Hoàng Nam", Role.DRIVER_ESCORT, "DR-001", "Vận hành", StaffRole.DRIVER, "79C-118226");
+        employee("escort", "escort@irtms.vn", "Nguyễn Minh Anh", Role.DRIVER_ESCORT, "ES-001", "Vận hành", StaffRole.ESCORT, null);
+        employee("driver2", "driver2@irtms.vn", "Trần Văn Lộc", Role.DRIVER_ESCORT, "DR-002", "Vận hành", StaffRole.DRIVER, "79C-224466");
+        employee("escort2", "escort2@irtms.vn", "Đặng Thu Hương", Role.DRIVER_ESCORT, "ES-002", "Vận hành", StaffRole.TEAM_LEADER, "79C-335577");
+        employee("escort3", "escort3@irtms.vn", "Hồ Gia Huy", Role.DRIVER_ESCORT, "ES-003", "Vận hành", StaffRole.ESCORT, null);
     }
 
     private void customer(String key, String email, String name, String phone, String company, CustomerType type, String address) {
@@ -332,7 +318,7 @@ public class DemoDataSeeder implements ApplicationRunner {
     private UserPrincipal p(String key) {
         UserPrincipal u = who.get(key);
         if (u == null) {
-            AppUser user = users.findByEmailIgnoreCase(demoEmail(key)).orElseThrow();
+            AppUser user = users.findByEmailIgnoreCase(key + "@irtms.vn").orElseThrow();
             u = UserPrincipal.from(user);
             who.put(key, u);
         }

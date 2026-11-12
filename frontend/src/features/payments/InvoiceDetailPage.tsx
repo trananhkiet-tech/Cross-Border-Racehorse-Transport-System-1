@@ -10,6 +10,7 @@ import { InvoiceStatusLabels, PaymentMethodLabels, PaymentMethodValues, type Pay
 import type { Invoice, PaymentItem } from '../../types/api';
 import { formatDate, formatDateTime } from '../../utils/format';
 import { Money, RefLink } from '../common/bits';
+import { QrPaymentPanel } from './QrPaymentPanel';
 
 function PayModal({ inv, onClose, onDone }: { inv: Invoice; onClose: () => void; onDone: () => void }) {
   const { run, busy } = useAction();
@@ -18,6 +19,8 @@ function PayModal({ inv, onClose, onDone }: { inv: Invoice; onClose: () => void;
   const [last4, setLast4] = useState('4242');
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
   const [result, setResult] = useState<PaymentItem | null>(null);
+  const [qrExpired, setQrExpired] = useState(false);
+  const isQr = method === 'SIMULATED_BANK_TRANSFER';
 
   const submit = async () => {
     const errs = {
@@ -26,6 +29,7 @@ function PayModal({ inv, onClose, onDone }: { inv: Invoice; onClose: () => void;
     };
     setErrors(errs);
     if (errs.amount || errs.last4) return;
+    if (isQr && qrExpired) { setErrors({ amount: 'Mã QR đã hết hạn, hãy tạo mã mới' }); return; }
     // Thất bại mô phỏng trả HTTP 200 với status FAILED – không phải lỗi mạng.
     const p = await run(() => paymentApi.simulate({ invoiceId: inv.id, amount: amount as number, method, cardLast4: method === 'SIMULATED_CARD' ? last4 : undefined }));
     setResult(p);
@@ -46,7 +50,7 @@ function PayModal({ inv, onClose, onDone }: { inv: Invoice; onClose: () => void;
 
   return (
     <Modal open onClose={onClose} onSubmit={submit} busy={busy} size="md" icon="bi-credit-card" title="Thanh toán mô phỏng" description="Không có tiền thật nào được chuyển. Không nhập số thẻ thật."
-      footer={<><Button variant="outline" onClick={onClose} disabled={busy}>Hủy</Button><Button type="submit" loading={busy}>Thanh toán</Button></>}>
+      footer={<><Button variant="outline" onClick={onClose} disabled={busy}>Hủy</Button><Button type="submit" loading={busy} disabled={isQr && qrExpired}>{isQr ? 'Tôi đã quét & chuyển khoản' : 'Thanh toán'}</Button></>}>
       <div className="ir-stack">
         <Alert tone="warning" title="Chỉ là mô phỏng">Chỉ cần nhập 4 số cuối bất kỳ. Kết thúc bằng <strong>0002</strong> để thử trường hợp bị từ chối.</Alert>
         <div className="ir-stack" style={{ gap: 8 }}>
@@ -57,6 +61,7 @@ function PayModal({ inv, onClose, onDone }: { inv: Invoice; onClose: () => void;
         {method === 'SIMULATED_CARD' && <TextField label="4 số cuối thẻ (mô phỏng)" value={last4} onChange={(v) => setLast4(v.replace(/\D/g, '').slice(0, 4))} error={errors.last4} inputMode="numeric" maxLength={4} />}
         <NumberField label="Số tiền thanh toán" value={amount} onChange={setAmount} suffix={inv.currency} error={errors.amount} min={0} step="0.01"
           help={inv.paidAmount === 0 ? `Đặt cọc tối thiểu ${inv.depositPercent}% = ${inv.depositAmount.toFixed(2)} ${inv.currency}` : `Còn lại ${inv.outstandingAmount.toFixed(2)} ${inv.currency}`} />
+        {isQr && <QrPaymentPanel invoiceNumber={inv.invoiceNumber} amount={amount} currency={inv.currency} onExpiredChange={setQrExpired} />}
         <div className="app-row">
           <Button size="sm" variant="outline" onClick={() => setAmount(inv.minimumNextPayment)}>Số tối thiểu</Button>
           <Button size="sm" variant="outline" onClick={() => setAmount(inv.outstandingAmount)}>Thanh toán toàn bộ</Button>

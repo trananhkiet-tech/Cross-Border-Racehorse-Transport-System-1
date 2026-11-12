@@ -1,10 +1,22 @@
+import { useEffect } from 'react';
 import { tripApi } from '../../api/endpoints';
 import { useAsync } from '../../hooks/useAsync';
+import type { VehiclePosition } from '../../components/RealMap';
 import { AsyncView, Badge, Card, DataTable, DescriptionList, Progress, RouteMap, StatusBadge, Timeline } from '../../components';
 import type { TimelineEntry } from '../../components';
 import { StopTypeLabels, TrackingEventTypeLabels, TripStatusLabels } from '../../types/enums';
 import type { StopProgress, Tracking } from '../../types/api';
 import { formatDateTime, minutesToText } from '../../utils/format';
+
+/** Vị trí xe: sự kiện gần nhất có tọa độ; nếu chưa có thì dùng điểm dừng hiện tại. */
+export function vehiclePosition(t: Tracking): VehiclePosition | null {
+  for (let i = t.events.length - 1; i >= 0; i--) {
+    const e = t.events[i];
+    if (e.latitude != null && e.longitude != null) return { lat: e.latitude, lng: e.longitude, label: e.location ?? e.routeStopName ?? 'Vị trí gần nhất', at: e.eventTime };
+  }
+  const cur = t.stops.find((s) => s.stop.id === t.currentStopId)?.stop;
+  return cur && cur.latitude != null && cur.longitude != null ? { lat: cur.latitude, lng: cur.longitude, label: cur.name } : null;
+}
 
 export function TrackingView({ t }: { t: Tracking }) {
   const stops = t.stops.map((s) => s.stop);
@@ -21,8 +33,8 @@ export function TrackingView({ t }: { t: Tracking }) {
   return (
     <div className="app-grid app-grid-main">
       <div className="ir-stack">
-        <Card title="Bản đồ hành trình" icon="bi-map" subtitle="Sơ đồ minh họa theo tọa độ điểm dừng, không phải GPS thời gian thực.">
-          <RouteMap stops={stops} doneStopIds={done} currentStopId={t.currentStopId} showVehicle blocked={t.operationBlocked} />
+        <Card title="Bản đồ hành trình" icon="bi-map" subtitle="Bản đồ thật (OpenStreetMap), tự làm mới mỗi 15 giây. Vị trí xe lấy từ checkpoint/GPS mới nhất.">
+          <RouteMap stops={stops} doneStopIds={done} currentStopId={t.currentStopId} showVehicle blocked={t.operationBlocked} vehicle={vehiclePosition(t)} height={420} />
         </Card>
         <Card title="Điểm dừng" icon="bi-signpost-split" flush>
           <DataTable<StopProgress> flush dense rows={t.stops} rowKey={(s) => s.stop.id} rowClassName={(s) => (s.state === 'CURRENT' ? 'row-info' : undefined)}
@@ -57,5 +69,11 @@ export function TrackingView({ t }: { t: Tracking }) {
 
 export function TrackingPanel({ tripId, version }: { tripId: number; version: unknown }) {
   const state = useAsync(() => tripApi.tracking(tripId), [tripId, version]);
+  const { reload } = state;
+  // Thời gian thực: hỏi lại tracking định kỳ khi tab đang hiển thị
+  useEffect(() => {
+    const id = window.setInterval(() => { if (document.visibilityState === 'visible') reload(); }, 15000);
+    return () => window.clearInterval(id);
+  }, [reload]);
   return <AsyncView state={state}>{(t) => <TrackingView t={t} />}</AsyncView>;
 }

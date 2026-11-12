@@ -86,7 +86,7 @@ function DashboardView({ d }: { d: Dashboard }) {
                 <XAxis dataKey="label" tick={{ fontSize: 12 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="value" name="Số lượng" fill="#16325C" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="value" name="Số lượng" fill="#102D4F" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

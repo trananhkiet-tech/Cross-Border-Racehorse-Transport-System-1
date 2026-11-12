@@ -6,7 +6,7 @@ import { Alert, AsyncView, Card, DataTable, DemoTag, KpiCard, PageHeader, Tabs }
 import type { Point } from '../../types/api';
 import { formatMoney, formatNumber } from '../../utils/format';
 
-const COLORS = ['#16325C', '#1B7340', '#8F5300', '#B42323', '#1D5FB0', '#6B4C9A', '#4F6D7A', '#A0522D'];
+const COLORS = ['#102D4F', '#21643A', '#805B00', '#9A2E2E', '#174A7E', '#5B3C91', '#34465A', '#C9A45C'];
 
 function ChartCard({ title, children, empty }: { title: string; children: ReactNode; empty?: boolean }) {
   return (
@@ -26,7 +26,7 @@ function BarsCard({ title, data, name = 'Số lượng', horizontal, money }: { 
           {horizontal ? <XAxis type="number" allowDecimals={false} tick={{ fontSize: 12 }} /> : <XAxis dataKey="label" tick={{ fontSize: 12 }} />}
           {horizontal ? <YAxis type="category" dataKey="label" width={120} tick={{ fontSize: 12 }} /> : <YAxis allowDecimals={!!money} tick={{ fontSize: 12 }} />}
           <Tooltip formatter={(v) => fmt(v)} />
-          <Bar dataKey="value" name={name} fill="#16325C" radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} />
+          <Bar dataKey="value" name={name} fill="#102D4F" radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartCard>
@@ -75,8 +75,8 @@ function RevenueTab() {
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(v) => formatMoney(Number(v), r.currency)} />
                   <Legend />
-                  <Line type="monotone" dataKey="value" name="Xuất hóa đơn" stroke="#16325C" strokeWidth={2} />
-                  <Line type="monotone" dataKey="value2" name="Đã thu" stroke="#1B7340" strokeWidth={2} />
+                  <Line type="monotone" dataKey="value" name="Xuất hóa đơn" stroke="#102D4F" strokeWidth={2} />
+                  <Line type="monotone" dataKey="value2" name="Đã thu" stroke="#21643A" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </ChartCard>

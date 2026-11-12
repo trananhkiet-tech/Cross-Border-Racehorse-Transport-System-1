@@ -41,9 +41,14 @@ export function NotificationsPage() {
         title="Thông báo"
         subtitle="Cập nhật về yêu cầu, tài liệu, báo giá, chuyến đi, sự cố và bồi thường."
         actions={
+          <>
+          <Button variant="outline" icon="bi-trash" loading={busy} onClick={async () => { await run(() => notificationApi.removeRead(), 'Đã xóa các thông báo đã đọc'); refreshCounts(); state.reload(); }}>
+            Xóa thông báo đã đọc
+          </Button>
           <Button variant="outline" icon="bi-check2-all" loading={busy} onClick={async () => { await run(() => notificationApi.readAll(), 'Đã đánh dấu tất cả là đã đọc'); refreshCounts(); state.reload(); }}>
             Đánh dấu đã đọc tất cả
           </Button>
+          </>
         }
       />
       <Card flush>
@@ -69,6 +74,7 @@ export function NotificationsPage() {
                         </div>
                       </div>
                       {!n.read && <span className="ir-note-dot" aria-label="Chưa đọc" />}
+                      <Button size="sm" variant="ghost" icon="bi-x-lg" aria-label="Xóa thông báo" title="Xóa thông báo" onClick={async (e) => { e.stopPropagation(); await run(() => notificationApi.remove(n.id), 'Đã xóa thông báo'); refreshCounts(); state.reload(); }} />
                     </li>
                   );
                 })}

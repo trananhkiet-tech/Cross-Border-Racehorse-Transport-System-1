@@ -31,6 +31,7 @@ export function IncidentListPage() {
           { key: 't', header: 'Loại', render: (i) => IncidentTypeLabels[i.incidentType] },
           { key: 'sv', header: 'Mức độ', sortValue: (i) => i.severity, render: (i) => <StatusBadge status={i.severity} labels={IncidentSeverityLabels} /> },
           { key: 'tr', header: 'Chuyến', render: (i) => <Cell mono main={i.tripNumber} sub={i.horseName ?? i.customerName} /> },
+          { key: 'loc', header: 'Vị trí', render: (i) => i.location || '—' },
           { key: 'd', header: 'Quyết định', render: (i) => (i.decision ? OperationalDecisionLabels[i.decision] : '—') },
           { key: 'r', header: 'Báo lúc', sortValue: (i) => i.reportedAt, render: (i) => <Cell main={formatDateTime(i.reportedAt)} sub={i.reportedBy} /> },
           { key: 's', header: 'Trạng thái', render: (i) => <span className="app-row" style={{ gap: 4 }}><StatusBadge status={i.status} labels={IncidentStatusLabels} />{i.tripBlocked && <Badge tone="critical">Chuyến tạm dừng</Badge>}</span> },

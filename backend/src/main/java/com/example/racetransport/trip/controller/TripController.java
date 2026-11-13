@@ -36,6 +36,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST Controller quản lý chuyến vận chuyển ngựa đua quốc tế.
+ *
+ * <p>Điều phối toàn bộ vòng đời chuyến: từ lên kế hoạch, phân công xe và nhân viên,
+ * theo dõi điểm kiểm tra, đến lưu trữ chuyến đã hoàn thành.</p>
+ *
+ * <p>Phân quyền:
+ * <ul>
+ *   <li>{@code FLEET_ROUTE_COORDINATOR} – tạo, sửa kế hoạch, phân công xe/nhân viên, lưu trữ chuyến.</li>
+ *   <li>{@code LOGISTICS_MANAGER} – xem, hủy, dọn hàng loạt chuyến cũ.</li>
+ *   <li>{@code DRIVER_ESCORT} – xem chuyến được phân công của mình.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Base URL: {@code /api/trips}</p>
+ *
+ * @author dangbao-hub
+ * @see TripService
+ * @see TripExecutionService
+ */
 @RestController
 @RequestMapping("/api/trips")
 @Tag(name = "Trips & Tracking")

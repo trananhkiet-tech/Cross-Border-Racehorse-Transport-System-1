@@ -1,4 +1,4 @@
-package com.example.racetransport.user.controller;
+gipackage com.example.racetransport.user.controller;
 
 import com.example.racetransport.common.response.MessageResponse;
 import com.example.racetransport.security.UserPrincipal;

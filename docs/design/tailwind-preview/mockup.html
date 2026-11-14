@@ -1,0 +1,868 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IRTMS · Bản thiết kế Tailwind (mockup)</title>
+<link rel="stylesheet" href="./mockup.css">
+</head>
+<body class="bg-cream font-sans text-ink antialiased">
+
+<!-- ============ icon sprite ============ -->
+<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
+  <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-clipboard" viewBox="0 0 24 24"><rect x="8" y="2.5" width="8" height="4" rx="1"/><path d="M16 4.5h2A2 2 0 0 1 20 6.5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2h2"/><path d="M8.5 12.5l2.5 2.5L16 10.5"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-truck" viewBox="0 0 24 24"><path d="M2 7h11v9H2z"/><path d="M13 10h3.5l3.5 3.5V16h-7"/><circle cx="6" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9.5 8.5h5M9.5 12h5"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.2-3 7.4-7 9-4-1.6-7-4.8-7-9V6z"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-bell" viewBox="0 0 24 24"><path d="M18 16H6l1.2-1.8A3 3 0 0 0 8 12.6V10a4 4 0 0 1 8 0v2.6c0 .6.2 1.1.6 1.6z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M8 11.5l4 4 4-4M4.5 19h15"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-chevron-down" viewBox="0 0 24 24"><path d="M5 9l7 7 7-7"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-pin" viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-10a6 6 0 1 0-12 0c0 4.8 6 10 6 10z"/><circle cx="12" cy="11" r="2.2"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 5.2a3.2 3.2 0 0 1 0 6"/><path d="M17.5 14.4c2.1.6 3.5 2.4 3.5 4.6"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="5" r="2.2"/><path d="M8.2 19h5.8a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.8"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-chart" viewBox="0 0 24 24"><path d="M4 20V9M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-filter" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-logout" viewBox="0 0 24 24"><path d="M14 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8"/><path d="M17 8l4 4-4 4M21 12H10"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="10" width="15" height="10" rx="2"/><path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.8-6 10-6 10 6 10 6-3.8 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-arrow-right" viewBox="0 0 24 24"><path d="M4 12h15M14 7l5 5-5 5"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3.5V6M16 3.5V6"/></symbol>
+    <symbol fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="i-horse" viewBox="0 0 24 24"><path d="M6.6 20v-8.4a5.4 5.4 0 0 1 10.8 0V20"/><path d="M4.4 20h4.4M15.2 20h4.4"/><circle cx="9.4" cy="11.2" r=".9" fill="currentColor" stroke="none"/><circle cx="14.6" cy="11.2" r=".9" fill="currentColor" stroke="none"/></symbol>
+  </g>
+</svg>
+
+<!-- ============================================================ 1. LOGIN -->
+<section data-screen="login" class="hidden h-[720px] w-full grid grid-cols-[1.05fr_1fr]">
+
+  <div class="login-glow relative flex flex-col justify-between px-12 py-10 text-white">
+    <div class="flex items-center gap-3">
+      <span class="grid size-11 place-items-center rounded-xl bg-white/10 ring-1 ring-white/20">
+        <svg class="size-6 text-gold"><use href="#i-horse"/></svg>
+      </span>
+      <span class="leading-tight">
+        <span class="block text-[18px] font-semibold tracking-[0.12em]">IRTMS</span>
+        <span class="block text-[12px] text-white/60">Vận chuyển ngựa đua quốc tế</span>
+      </span>
+    </div>
+
+    <div class="max-w-[470px]">
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11.5px] font-medium tracking-wide text-gold ring-1 ring-white/15">
+        <span class="size-1.5 rounded-full bg-gold"></span> Chuẩn vận chuyển quốc tế FEI
+      </p>
+      <h1 class="text-[34px] font-semibold leading-[1.18] tracking-[-0.02em]">
+        Đưa ngựa quý<br>qua biên giới,<br><span class="text-gold">an toàn tuyệt đối.</span>
+      </h1>
+      <p class="mt-4 max-w-[400px] text-[14px] leading-relaxed text-white/70">
+        Theo dõi hồ sơ kiểm dịch, lịch trình vận chuyển và chi phí trên một nền tảng duy nhất — từ chuồng ngựa đến đường đua.
+      </p>
+
+      <ul class="mt-7 space-y-3 text-[13.5px] text-white/80">
+        <li class="flex items-center gap-3"><span class="grid size-6 place-items-center rounded-md bg-gold/15 text-gold"><svg class="size-3.5"><use href="#i-check"/></svg></span> Hồ sơ kiểm dịch &amp; giấy tờ xuất nhập cảnh</li>
+        <li class="flex items-center gap-3"><span class="grid size-6 place-items-center rounded-md bg-gold/15 text-gold"><svg class="size-3.5"><use href="#i-check"/></svg></span> Giám sát hành trình theo thời gian thực</li>
+        <li class="flex items-center gap-3"><span class="grid size-6 place-items-center rounded-md bg-gold/15 text-gold"><svg class="size-3.5"><use href="#i-check"/></svg></span> Báo giá minh bạch, thanh toán một lần</li>
+      </ul>
+    </div>
+
+    <div class="flex items-center gap-10 border-t border-white/10 pt-5">
+      <div><p class="text-[22px] font-semibold tabular-nums">1.240</p><p class="text-[11.5px] text-white/50">Chuyến đã hoàn thành</p></div>
+      <div><p class="text-[22px] font-semibold tabular-nums">18</p><p class="text-[11.5px] text-white/50">Quốc gia đối tác</p></div>
+      <div><p class="text-[22px] font-semibold tabular-nums">99,4%</p><p class="text-[11.5px] text-white/50">Ngựa đến an toàn</p></div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-center bg-cream px-10">
+    <div class="w-full max-w-[400px]">
+      <h2 class="text-[26px] font-semibold tracking-[-0.01em]">Đăng nhập</h2>
+      <p class="mt-1.5 text-[13.5px] text-muted">Quản lý yêu cầu vận chuyển ngựa đua của bạn.</p>
+
+      <div class="mt-7 space-y-4">
+        <label class="block">
+          <span class="mb-1.5 block text-[12.5px] font-medium">Email <span class="text-rose-600">*</span></span>
+          <span class="flex h-11 items-center gap-2.5 rounded-lg border border-line bg-white px-3.5 text-ink-2 focus-within:border-navy focus-within:ring-4 focus-within:ring-gold/25">
+            <svg class="size-4 text-muted"><use href="#i-mail"/></svg>
+            <input class="h-full w-full border-0 bg-transparent text-[13.5px] outline-none placeholder:text-muted/70" value="manager@irtms.vn">
+          </span>
+        </label>
+
+        <label class="block">
+          <span class="mb-1.5 block text-[12.5px] font-medium">Mật khẩu <span class="text-rose-600">*</span></span>
+          <span class="flex h-11 items-center gap-2.5 rounded-lg border border-line bg-white px-3.5 text-ink-2 focus-within:border-navy focus-within:ring-4 focus-within:ring-gold/25">
+            <svg class="size-4 text-muted"><use href="#i-lock"/></svg>
+            <input type="password" class="h-full w-full border-0 bg-transparent text-[13.5px] outline-none" value="Demo@123">
+            <svg class="size-4 shrink-0 text-muted"><use href="#i-eye"/></svg>
+          </span>
+        </label>
+
+        <div class="flex items-center justify-between pt-1 text-[12.5px]">
+          <label class="flex items-center gap-2 text-ink-2"><span class="grid size-4 place-items-center rounded border border-navy bg-navy text-white"><svg class="size-2.5"><use href="#i-check"/></svg></span> Ghi nhớ đăng nhập</label>
+          <a class="font-medium text-navy hover:underline">Quên mật khẩu?</a>
+        </div>
+
+        <button class="mt-2 h-11 w-full rounded-lg bg-navy text-[14px] font-semibold text-white shadow-[0_6px_18px_rgba(15,44,76,.22)] hover:bg-navy-mid">
+          Đăng nhập
+        </button>
+      </div>
+
+      <div class="my-6 flex items-center gap-3 text-[11.5px] text-muted"><span class="h-px flex-1 bg-line"></span> Tài khoản demo · mật khẩu Demo@123 <span class="h-px flex-1 bg-line"></span></div>
+
+      <div class="flex flex-wrap gap-2">
+        <span class="rounded-full bg-white px-3 py-1.5 text-[12px] font-medium text-ink-2 ring-1 ring-line">Khách hàng</span>
+        <span class="rounded-full bg-navy px-3 py-1.5 text-[12px] font-medium text-white">Quản lý</span>
+        <span class="rounded-full bg-white px-3 py-1.5 text-[12px] font-medium text-ink-2 ring-1 ring-line">Chuyên viên</span>
+        <span class="rounded-full bg-white px-3 py-1.5 text-[12px] font-medium text-ink-2 ring-1 ring-line">Điều phối</span>
+        <span class="rounded-full bg-white px-3 py-1.5 text-[12px] font-medium text-ink-2 ring-1 ring-line">Tài xế</span>
+      </div>
+
+      <p class="mt-7 text-center text-[12.5px] text-muted">Chưa có tài khoản? <a class="font-semibold text-navy hover:underline">Đăng ký tài khoản khách hàng</a></p>
+      <p class="mt-8 text-center text-[11px] text-muted/80">© 2026 IRTMS · Đồ án môn học, dữ liệu demo</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 2. DASHBOARD -->
+<section data-screen="dashboard" class="hidden flex h-[720px] w-full overflow-hidden">
+
+  <!-- sidebar -->
+  <aside class="flex w-[260px] shrink-0 flex-col bg-navy text-white">
+    <div class="flex items-center gap-3 px-5 py-5">
+      <span class="grid size-9 place-items-center rounded-lg bg-white/10 ring-1 ring-white/15"><svg class="size-5 text-gold"><use href="#i-horse"/></svg></span>
+      <span class="leading-tight"><span class="block text-[14px] font-semibold tracking-[0.12em]">IRTMS</span><span class="block text-[10.5px] text-white/50">Vận chuyển ngựa đua</span></span>
+    </div>
+
+    <nav class="flex-1 overflow-hidden px-3 pb-4">
+      <p class="px-3 pb-1.5 pt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Điều hành</p>
+      <a class="relative flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2 text-[13.5px] font-medium text-white">
+        <span class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-gold"></span>
+        <svg class="size-4 text-gold"><use href="#i-grid"/></svg> Tổng quan
+      </a>
+
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Yêu cầu &amp; tuân thủ</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white">
+        <svg class="size-4"><use href="#i-clipboard"/></svg><span class="flex-1">Yêu cầu vận chuyển</span><span class="rounded-full bg-gold/15 px-1.5 py-0.5 text-[10.5px] font-semibold text-gold tnum">7</span>
+      </a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white">
+        <svg class="size-4"><use href="#i-shield"/></svg><span class="flex-1">Tuân thủ</span><span class="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-200 tnum">3</span>
+      </a>
+
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Đội xe &amp; tuyến</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-truck"/></svg> Đội xe</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-route"/></svg> Tuyến đường</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-users"/></svg> Nhân sự vận hành</a>
+
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Vận hành</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-truck"/></svg> Chuyến đi</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white">
+        <svg class="size-4"><use href="#i-alert"/></svg><span class="flex-1">Sự cố</span><span class="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-200 tnum">2</span>
+      </a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-download"/></svg> Bàn giao</a>
+
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Tài chính</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-receipt"/></svg> Báo giá</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70 hover:bg-white/5 hover:text-white"><svg class="size-4"><use href="#i-chart"/></svg> Báo cáo</a>
+    </nav>
+
+    <div class="border-t border-white/10 px-4 py-3.5">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Đăng nhập với vai trò</p>
+      <p class="mt-1 text-[12.5px] font-medium text-white/85">Quản lý Logistics</p>
+    </div>
+  </aside>
+
+  <!-- main -->
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header class="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-white px-7">
+      <nav class="flex items-center gap-2 text-[12.5px] text-muted">
+        <span>Tổng quan</span>
+      </nav>
+      <div class="ml-auto flex items-center gap-3">
+        <div class="flex h-9 w-[260px] items-center gap-2 rounded-lg border border-line bg-cream/70 px-3 text-muted">
+          <svg class="size-4"><use href="#i-search"/></svg>
+          <span class="text-[12.5px]">Tìm yêu cầu, chuyến đi, ngựa…</span>
+          <span class="ml-auto rounded border border-line bg-white px-1 text-[10px]">⌘K</span>
+        </div>
+        <button class="relative grid size-9 place-items-center rounded-lg text-ink-2 hover:bg-cream">
+          <svg class="size-[18px]"><use href="#i-bell"/></svg>
+          <span class="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-rose-600 text-[9px] font-bold text-white">5</span>
+        </button>
+        <span class="h-7 w-px bg-line"></span>
+        <div class="flex items-center gap-2.5">
+          <span class="grid size-9 place-items-center rounded-full bg-navy text-[12px] font-semibold text-white">MA</span>
+          <span class="leading-tight"><span class="block text-[12.5px] font-semibold">Trần Minh Anh</span><span class="block text-[11px] text-muted">Quản lý Logistics</span></span>
+          <svg class="size-3.5 text-muted"><use href="#i-chevron-down"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 overflow-hidden px-6 py-5">
+      <!-- page header -->
+      <div class="flex items-start justify-between">
+        <div>
+          <h1 class="text-[22px] font-semibold tracking-[-0.015em]">Chào buổi sáng, chị Minh Anh 👋</h1>
+          <p class="mt-1 text-[13px] text-muted">Thứ Tư, 12/11/2026 · Bạn có <b class="text-ink">7 yêu cầu</b> đang chờ xử lý</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink-2 hover:border-navy/30">
+            <svg class="size-4"><use href="#i-download"/></svg> Xuất báo cáo
+          </button>
+          <button class="flex h-9 items-center gap-2 rounded-lg bg-navy px-3.5 text-[13px] font-semibold text-white shadow-[0_4px_14px_rgba(15,44,76,.20)] hover:bg-navy-mid">
+            <svg class="size-4"><use href="#i-chart"/></svg> Xem báo cáo
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="mt-4 grid grid-cols-4 gap-3">
+        <div class="rounded-xl border border-line bg-white p-3.5">
+          <div class="flex items-start justify-between">
+            <span class="grid size-9 place-items-center rounded-lg bg-navy-soft text-navy"><svg class="size-[18px]"><use href="#i-clipboard"/></svg></span>
+            <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10.5px] font-semibold text-emerald-700">+3 hôm nay</span>
+          </div>
+          <p class="mt-2.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted">Chờ duyệt</p>
+          <p class="mt-1 text-[24px] font-semibold leading-none tnum">7</p>
+          <p class="mt-1.5 text-[11.5px] text-muted">2 ưu tiên · hạn trong 24h</p>
+        </div>
+
+        <div class="rounded-xl border border-line bg-white p-3.5">
+          <div class="flex items-start justify-between">
+            <span class="grid size-9 place-items-center rounded-lg bg-gold-soft text-gold-deep"><svg class="size-[18px]"><use href="#i-file"/></svg></span>
+            <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[10.5px] font-semibold text-amber-700">cần rà soát</span>
+          </div>
+          <p class="mt-2.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted">Tài liệu chờ duyệt</p>
+          <p class="mt-1 text-[24px] font-semibold leading-none tnum">12</p>
+          <p class="mt-1.5 text-[11.5px] text-muted">4 hồ sơ thiếu giấy kiểm dịch</p>
+        </div>
+
+        <div class="rounded-xl border border-line bg-white p-3.5">
+          <div class="flex items-start justify-between">
+            <span class="grid size-9 place-items-center rounded-lg bg-navy-soft text-navy"><svg class="size-[18px]"><use href="#i-truck"/></svg></span>
+            <span class="rounded-full bg-navy-soft px-2 py-0.5 text-[10.5px] font-semibold text-navy">đang chạy</span>
+          </div>
+          <p class="mt-2.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted">Chuyến đang vận hành</p>
+          <p class="mt-1 text-[24px] font-semibold leading-none tnum">9</p>
+          <p class="mt-1.5 text-[11.5px] text-muted">1 chuyến trễ 45 phút</p>
+        </div>
+
+        <div class="rounded-xl border border-line bg-white p-3.5">
+          <div class="flex items-start justify-between">
+            <span class="grid size-9 place-items-center rounded-lg bg-emerald-50 text-emerald-700"><svg class="size-[18px]"><use href="#i-card"/></svg></span>
+            <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10.5px] font-semibold text-emerald-700">+18,2%</span>
+          </div>
+          <p class="mt-2.5 text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted">Đã thu tháng này</p>
+          <p class="mt-1 text-[24px] font-semibold leading-none tnum">₫ 486,5tr</p>
+          <p class="mt-1.5 text-[11.5px] text-muted">3 hoá đơn quá hạn</p>
+        </div>
+      </div>
+
+      <!-- sections -->
+      <div class="mt-3.5 grid grid-cols-3 gap-3">
+        <div class="rounded-xl border border-line bg-white">
+          <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+            <h3 class="text-[13.5px] font-semibold">Yêu cầu chờ duyệt</h3>
+            <a class="flex items-center gap-1 text-[12px] font-medium text-navy hover:underline">Xem tất cả <svg class="size-3"><use href="#i-chevron-right"/></svg></a>
+          </div>
+          <ul class="divide-y divide-line/80">
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="mt-0.5 grid size-7 shrink-0 place-items-center rounded-md bg-navy-soft text-[10px] font-bold text-navy">REQ</span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">REQ-2026-0148 · Thunder Bay</p>
+                <p class="text-[11.5px] text-muted">Sân bay Liège → Meydan · 12/11</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ duyệt</span>
+            </li>
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="mt-0.5 grid size-7 shrink-0 place-items-center rounded-md bg-navy-soft text-[10px] font-bold text-navy">REQ</span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">REQ-2026-0147 · Golden Sirocco</p>
+                <p class="text-[11.5px] text-muted">Newmarket → Sha Tin · 14/11</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ duyệt</span>
+            </li>
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="mt-0.5 grid size-7 shrink-0 place-items-center rounded-md bg-navy-soft text-[10px] font-bold text-navy">REQ</span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">REQ-2026-0145 · Night Whisper</p>
+                <p class="text-[11.5px] text-muted">Chantilly → Kranji · 15/11</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-rose-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-700 ring-1 ring-rose-600/15">Ưu tiên</span>
+            </li>
+            
+          </ul>
+        </div>
+
+        <div class="rounded-xl border border-line bg-white">
+          <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+            <h3 class="text-[13.5px] font-semibold">Chuyến sắp khởi hành</h3>
+            <a class="flex items-center gap-1 text-[12px] font-medium text-navy hover:underline">Xem tất cả <svg class="size-3"><use href="#i-chevron-right"/></svg></a>
+          </div>
+          <ul class="divide-y divide-line/80">
+            <li class="flex items-center gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-gold-soft text-gold-deep"><svg class="size-3.5"><use href="#i-truck"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">TRIP-0921 · Liège → Meydan</p>
+                <p class="text-[11.5px] text-muted">12/11 · 06:30 · 2 ngựa</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">Sẵn sàng</span>
+            </li>
+            <li class="flex items-center gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-gold-soft text-gold-deep"><svg class="size-3.5"><use href="#i-truck"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">TRIP-0923 · Newmarket → Sha Tin</p>
+                <p class="text-[11.5px] text-muted">12/11 · 14:00 · 1 ngựa</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-amber-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ tài xế</span>
+            </li>
+            <li class="flex items-center gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-gold-soft text-gold-deep"><svg class="size-3.5"><use href="#i-truck"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">TRIP-0926 · Dubai → Tokyo</p>
+                <p class="text-[11.5px] text-muted">13/11 · 09:15 · 3 ngựa</p>
+              </div>
+              <span class="shrink-0 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">Sẵn sàng</span>
+            </li>
+            
+          </ul>
+        </div>
+
+        <div class="rounded-xl border border-line bg-white">
+          <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+            <h3 class="text-[13.5px] font-semibold">Cảnh báo tuân thủ</h3>
+            <a class="flex items-center gap-1 text-[12px] font-medium text-navy hover:underline">Xem tất cả <svg class="size-3"><use href="#i-chevron-right"/></svg></a>
+          </div>
+          <ul class="divide-y divide-line/80">
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-rose-50 text-rose-700"><svg class="size-3.5"><use href="#i-alert"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">Thiếu giấy kiểm dịch xuất khẩu</p>
+                <p class="text-[11.5px] text-muted">REQ-2026-0145 · Night Whisper</p>
+              </div>
+              <span class="shrink-0 text-[11px] font-medium text-rose-700">2 ngày</span>
+            </li>
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-amber-50 text-amber-700"><svg class="size-3.5"><use href="#i-clock"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">Chứng nhận tiêm phòng sắp hết hạn</p>
+                <p class="text-[11.5px] text-muted">Golden Sirocco · hết hạn 18/11</p>
+              </div>
+              <span class="shrink-0 text-[11px] font-medium text-amber-700">6 ngày</span>
+            </li>
+            <li class="flex items-start gap-3 px-4 py-2">
+              <span class="grid size-7 shrink-0 place-items-center rounded-md bg-rose-50 text-rose-700"><svg class="size-3.5"><use href="#i-alert"/></svg></span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[12.5px] font-medium">Hộ chiếu ngựa chưa xác thực</p>
+                <p class="text-[11.5px] text-muted">Silver Dune · REQ-2026-0142</p>
+              </div>
+              <span class="shrink-0 text-[11px] font-medium text-rose-700">1 ngày</span>
+            </li>
+            
+          </ul>
+        </div>
+      </div>
+
+      <!-- chart -->
+      <div class="mt-3 rounded-xl border border-line bg-white px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-[13.5px] font-semibold">Chuyến đi theo tháng</h3>
+            <p class="text-[11.5px] text-muted">Dữ liệu 6 tháng gần nhất · đơn vị: chuyến</p>
+          </div>
+          <div class="flex rounded-lg bg-cream p-0.5 text-[11.5px] font-medium">
+            <span class="rounded-md px-2.5 py-1 text-muted">Tuần</span>
+            <span class="rounded-md bg-white px-2.5 py-1 text-navy shadow-sm">Tháng</span>
+            <span class="rounded-md px-2.5 py-1 text-muted">Năm</span>
+          </div>
+        </div>
+        <div class="mt-4 flex h-[76px] items-end gap-5">
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="w-full max-w-[46px] rounded-t-md bg-navy-soft" style="height:52%"></div><span class="text-[10.5px] text-muted">Th6</span></div>
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="w-full max-w-[46px] rounded-t-md bg-navy-soft" style="height:68%"></div><span class="text-[10.5px] text-muted">Th7</span></div>
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="w-full max-w-[46px] rounded-t-md bg-navy-soft" style="height:44%"></div><span class="text-[10.5px] text-muted">Th8</span></div>
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="w-full max-w-[46px] rounded-t-md bg-navy-soft" style="height:80%"></div><span class="text-[10.5px] text-muted">Th9</span></div>
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="w-full max-w-[46px] rounded-t-md bg-navy-soft" style="height:62%"></div><span class="text-[10.5px] text-muted">Th10</span></div>
+          <div class="flex h-full flex-1 flex-col items-center justify-end gap-2"><div class="relative w-full max-w-[46px] rounded-t-md bg-gold" style="height:92%"><span class="absolute -top-4 left-1/2 -translate-x-1/2 rounded bg-navy px-1.5 py-0.5 text-[9.5px] font-semibold text-white tnum">23</span></div><span class="text-[10.5px] font-semibold text-ink">Th11</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 3. REQUESTS -->
+<section data-screen="requests" class="hidden flex h-[720px] w-full overflow-hidden">
+  <aside class="flex w-[260px] shrink-0 flex-col bg-navy text-white">
+    <div class="flex items-center gap-3 px-5 py-5">
+      <span class="grid size-9 place-items-center rounded-lg bg-white/10 ring-1 ring-white/15"><svg class="size-5 text-gold"><use href="#i-horse"/></svg></span>
+      <span class="leading-tight"><span class="block text-[14px] font-semibold tracking-[0.12em]">IRTMS</span><span class="block text-[10.5px] text-white/50">Vận chuyển ngựa đua</span></span>
+    </div>
+    <nav class="flex-1 px-3 pb-4">
+      <p class="px-3 pb-1.5 pt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Điều hành</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-grid"/></svg> Tổng quan</a>
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Yêu cầu &amp; tuân thủ</p>
+      <a class="relative flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2 text-[13.5px] font-medium text-white">
+        <span class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-gold"></span>
+        <svg class="size-4 text-gold"><use href="#i-clipboard"/></svg><span class="flex-1">Yêu cầu vận chuyển</span><span class="rounded-full bg-gold/15 px-1.5 py-0.5 text-[10.5px] font-semibold text-gold tnum">7</span>
+      </a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-shield"/></svg><span class="flex-1">Tuân thủ</span><span class="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-200 tnum">3</span></a>
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Đội xe &amp; tuyến</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-truck"/></svg> Đội xe</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-route"/></svg> Tuyến đường</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-users"/></svg> Nhân sự vận hành</a>
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Vận hành</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-truck"/></svg> Chuyến đi</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-alert"/></svg><span class="flex-1">Sự cố</span><span class="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-200 tnum">2</span></a>
+    </nav>
+    <div class="border-t border-white/10 px-4 py-3.5">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Đăng nhập với vai trò</p>
+      <p class="mt-1 text-[12.5px] font-medium text-white/85">Quản lý Logistics</p>
+    </div>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header class="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-white px-7">
+      <nav class="flex items-center gap-2 text-[12.5px] text-muted">
+        <span>Yêu cầu &amp; tuân thủ</span><svg class="size-3"><use href="#i-chevron-right"/></svg><span class="font-medium text-ink">Yêu cầu vận chuyển</span>
+      </nav>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative grid size-9 place-items-center rounded-lg text-ink-2 hover:bg-cream"><svg class="size-[18px]"><use href="#i-bell"/></svg><span class="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-rose-600 text-[9px] font-bold text-white">5</span></button>
+        <span class="h-7 w-px bg-line"></span>
+        <div class="flex items-center gap-2.5">
+          <span class="grid size-9 place-items-center rounded-full bg-navy text-[12px] font-semibold text-white">MA</span>
+          <span class="leading-tight"><span class="block text-[12.5px] font-semibold">Trần Minh Anh</span><span class="block text-[11px] text-muted">Quản lý Logistics</span></span>
+          <svg class="size-3.5 text-muted"><use href="#i-chevron-down"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 px-6 py-4">
+      <div class="flex items-end justify-between">
+        <div>
+          <h1 class="text-[22px] font-semibold tracking-[-0.015em]">Yêu cầu vận chuyển</h1>
+          <p class="mt-1 text-[13px] text-muted">42 yêu cầu · 7 đang chờ duyệt · cập nhật 2 phút trước</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink-2"><svg class="size-4"><use href="#i-download"/></svg> Xuất CSV</button>
+          <button class="flex h-9 items-center gap-2 rounded-lg bg-navy px-3.5 text-[13px] font-semibold text-white shadow-[0_4px_14px_rgba(15,44,76,.20)]"><svg class="size-4"><use href="#i-plus"/></svg> Tạo yêu cầu</button>
+        </div>
+      </div>
+
+      <!-- filter bar -->
+      <div class="mt-4 flex items-center gap-2.5">
+        <div class="flex h-9 w-[300px] items-center gap-2 rounded-lg border border-line bg-white px-3 text-muted">
+          <svg class="size-4"><use href="#i-search"/></svg>
+          <span class="text-[12.5px]">Tìm mã yêu cầu, tên ngựa, khách hàng…</span>
+        </div>
+        <div class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12.5px] text-ink-2"><svg class="size-4 text-muted"><use href="#i-filter"/></svg> Trạng thái <svg class="size-3 text-muted"><use href="#i-chevron-down"/></svg></div>
+        <div class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12.5px] text-ink-2"><svg class="size-4 text-muted"><use href="#i-route"/></svg> Tuyến <svg class="size-3 text-muted"><use href="#i-chevron-down"/></svg></div>
+        <div class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3 text-[12.5px] text-ink-2"><svg class="size-4 text-muted"><use href="#i-calendar"/></svg> 01/11 – 30/11</div>
+        <span class="ml-auto text-[12px] text-muted">Sắp xếp: <b class="text-ink">Mới nhất</b></span>
+      </div>
+
+      <div class="mt-3 flex gap-2">
+        <span class="rounded-full bg-navy px-3 py-1 text-[12px] font-semibold text-white">Tất cả <span class="tnum">42</span></span>
+        <span class="rounded-full bg-white px-3 py-1 text-[12px] font-medium text-ink-2 ring-1 ring-line">Chờ duyệt <span class="tnum">7</span></span>
+        <span class="rounded-full bg-white px-3 py-1 text-[12px] font-medium text-ink-2 ring-1 ring-line">Đang rà soát <span class="tnum">5</span></span>
+        <span class="rounded-full bg-white px-3 py-1 text-[12px] font-medium text-ink-2 ring-1 ring-line">Cần bổ sung <span class="tnum">4</span></span>
+        <span class="rounded-full bg-white px-3 py-1 text-[12px] font-medium text-ink-2 ring-1 ring-line">Đã duyệt <span class="tnum">18</span></span>
+        <span class="rounded-full bg-white px-3 py-1 text-[12px] font-medium text-ink-2 ring-1 ring-line">Từ chối <span class="tnum">2</span></span>
+      </div>
+
+      <!-- table -->
+      <div class="mt-3 overflow-hidden rounded-xl border border-line bg-white">
+        <table class="w-full border-collapse text-[12.5px]">
+          <thead>
+            <tr class="border-b border-line bg-cream/60 text-left text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted">
+              <th class="w-9 px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></th>
+              <th class="px-3 py-2.5">Mã / Ngựa</th>
+              <th class="px-3 py-2.5">Tuyến vận chuyển</th>
+              <th class="px-3 py-2.5">Khách hàng</th>
+              <th class="px-3 py-2.5">Khởi hành</th>
+              <th class="px-3 py-2.5">Tiến độ</th>
+              <th class="px-3 py-2.5">Trạng thái</th>
+              <th class="w-10 px-3 py-2.5"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line/80">
+            <tr class="hover:bg-cream/40">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0148</p><p class="text-[11.5px] text-muted">Thunder Bay · Thoroughbred</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Liège → Meydan</p><p class="text-[11.5px] text-muted">BE → AE</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-navy-soft text-[10px] font-semibold text-navy">LH</span> Lê Hoàng Nam</div></td>
+              <td class="px-3 py-2.5 tnum">12/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[40%] rounded-full bg-navy"></span></span><span class="text-[11px] text-muted tnum">2/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ duyệt</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+            <tr class="hover:bg-cream/40">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0147</p><p class="text-[11.5px] text-muted">Golden Sirocco · Arabian</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Newmarket → Sha Tin</p><p class="text-[11.5px] text-muted">GB → HK</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-gold-soft text-[10px] font-semibold text-gold-deep">PT</span> Phạm Thu Trang</div></td>
+              <td class="px-3 py-2.5 tnum">14/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[60%] rounded-full bg-navy"></span></span><span class="text-[11px] text-muted tnum">3/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700 ring-1 ring-sky-600/15">Đang rà soát</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+            <tr class="bg-rose-50/40 hover:bg-rose-50/70">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0145 <span class="ml-1 rounded bg-rose-100 px-1 py-px text-[9.5px] font-bold uppercase text-rose-700">Ưu tiên</span></p><p class="text-[11.5px] text-muted">Night Whisper · Thoroughbred</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Chantilly → Kranji</p><p class="text-[11.5px] text-muted">FR → SG</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-navy-soft text-[10px] font-semibold text-navy">VD</span> Vũ Đức Duy</div></td>
+              <td class="px-3 py-2.5 tnum">15/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[20%] rounded-full bg-rose-500"></span></span><span class="text-[11px] text-rose-700 tnum">1/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700 ring-1 ring-rose-600/15">Cần bổ sung</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+            <tr class="hover:bg-cream/40">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0142</p><p class="text-[11.5px] text-muted">Silver Dune · Arabian</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Dubai → Tokyo</p><p class="text-[11.5px] text-muted">AE → JP</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-gold-soft text-[10px] font-semibold text-gold-deep">NH</span> Nguyễn Hải Yến</div></td>
+              <td class="px-3 py-2.5 tnum">16/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[100%] rounded-full bg-emerald-500"></span></span><span class="text-[11px] text-muted tnum">5/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">Đã duyệt</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+            <tr class="hover:bg-cream/40">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0141</p><p class="text-[11.5px] text-muted">Desert Crown · Thoroughbred</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Kentucky → Deauville</p><p class="text-[11.5px] text-muted">US → FR</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-navy-soft text-[10px] font-semibold text-navy">DA</span> Đỗ Anh Khoa</div></td>
+              <td class="px-3 py-2.5 tnum">18/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[80%] rounded-full bg-navy"></span></span><span class="text-[11px] text-muted tnum">4/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ duyệt</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+            <tr class="hover:bg-cream/40">
+              <td class="px-4 py-2.5"><span class="block size-3.5 rounded border border-line bg-white"></span></td>
+              <td class="px-3 py-2.5"><p class="font-semibold text-navy">REQ-2026-0139</p><p class="text-[11.5px] text-muted">Northern Star · Standardbred</p></td>
+              <td class="px-3 py-2.5"><p class="font-medium">Oslo → Melbourne</p><p class="text-[11.5px] text-muted">NO → AU</p></td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="grid size-6 place-items-center rounded-full bg-gold-soft text-[10px] font-semibold text-gold-deep">BL</span> Bùi Lan Phương</div></td>
+              <td class="px-3 py-2.5 tnum">20/11/2026</td>
+              <td class="px-3 py-2.5"><div class="flex items-center gap-2"><span class="h-1.5 w-16 overflow-hidden rounded-full bg-navy-soft"><span class="block h-full w-[0%] rounded-full bg-navy"></span></span><span class="text-[11px] text-muted tnum">0/5</span></div></td>
+              <td class="px-3 py-2.5"><span class="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-500/15">Từ chối</span></td>
+              <td class="px-3 py-2.5"><svg class="size-4 text-muted"><use href="#i-chevron-right"/></svg></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="flex items-center justify-between border-t border-line px-4 py-2.5 text-[12px] text-muted">
+          <span>Hiển thị <b class="text-ink">1–6</b> trong <b class="text-ink">42</b> yêu cầu</span>
+          <div class="flex items-center gap-1">
+            <span class="grid size-7 place-items-center rounded-md border border-line bg-white"><svg class="size-3.5 rotate-180"><use href="#i-chevron-right"/></svg></span>
+            <span class="grid size-7 place-items-center rounded-md bg-navy text-[11.5px] font-semibold text-white">1</span>
+            <span class="grid size-7 place-items-center rounded-md border border-line bg-white">2</span>
+            <span class="grid size-7 place-items-center rounded-md border border-line bg-white">3</span>
+            <span class="grid size-7 place-items-center rounded-md border border-line bg-white"><svg class="size-3.5"><use href="#i-chevron-right"/></svg></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 4. TRIP DETAIL -->
+<section data-screen="trip" class="hidden flex h-[720px] w-full overflow-hidden">
+  <aside class="flex w-[260px] shrink-0 flex-col bg-navy text-white">
+    <div class="flex items-center gap-3 px-5 py-5">
+      <span class="grid size-9 place-items-center rounded-lg bg-white/10 ring-1 ring-white/15"><svg class="size-5 text-gold"><use href="#i-horse"/></svg></span>
+      <span class="leading-tight"><span class="block text-[14px] font-semibold tracking-[0.12em]">IRTMS</span><span class="block text-[10.5px] text-white/50">Vận chuyển ngựa đua</span></span>
+    </div>
+    <nav class="flex-1 px-3 pb-4">
+      <p class="px-3 pb-1.5 pt-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Điều hành</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-grid"/></svg> Tổng quan</a>
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Vận hành</p>
+      <a class="relative flex items-center gap-3 rounded-lg bg-white/10 px-3 py-2 text-[13.5px] font-medium text-white">
+        <span class="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-gold"></span>
+        <svg class="size-4 text-gold"><use href="#i-truck"/></svg> Chuyến đi
+      </a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-alert"/></svg><span class="flex-1">Sự cố</span><span class="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[10.5px] font-semibold text-rose-200 tnum">2</span></a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-download"/></svg> Bàn giao</a>
+      <p class="px-3 pb-1.5 pt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Yêu cầu &amp; tuân thủ</p>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-clipboard"/></svg> Yêu cầu vận chuyển</a>
+      <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13.5px] text-white/70"><svg class="size-4"><use href="#i-shield"/></svg> Tuân thủ</a>
+    </nav>
+    <div class="border-t border-white/10 px-4 py-3.5">
+      <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">Đăng nhập với vai trò</p>
+      <p class="mt-1 text-[12.5px] font-medium text-white/85">Quản lý Logistics</p>
+    </div>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header class="flex h-16 shrink-0 items-center gap-4 border-b border-line bg-white px-7">
+      <nav class="flex items-center gap-2 text-[12.5px] text-muted">
+        <span>Vận hành</span><svg class="size-3"><use href="#i-chevron-right"/></svg><span>Chuyến đi</span><svg class="size-3"><use href="#i-chevron-right"/></svg><span class="font-medium text-ink">TRIP-0921</span>
+      </nav>
+      <div class="ml-auto flex items-center gap-3">
+        <button class="relative grid size-9 place-items-center rounded-lg text-ink-2 hover:bg-cream"><svg class="size-[18px]"><use href="#i-bell"/></svg><span class="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-rose-600 text-[9px] font-bold text-white">5</span></button>
+        <span class="h-7 w-px bg-line"></span>
+        <div class="flex items-center gap-2.5">
+          <span class="grid size-9 place-items-center rounded-full bg-navy text-[12px] font-semibold text-white">MA</span>
+          <span class="leading-tight"><span class="block text-[12.5px] font-semibold">Trần Minh Anh</span><span class="block text-[11px] text-muted">Quản lý Logistics</span></span>
+          <svg class="size-3.5 text-muted"><use href="#i-chevron-down"/></svg>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex-1 px-6 py-4">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-[22px] font-semibold tracking-[-0.015em]">TRIP-0921</h1>
+            <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[11.5px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">● Đang vận chuyển</span>
+          </div>
+          <p class="mt-1 text-[13px] text-muted">Liège (BE) → Meydan (AE) · 2 ngựa · khởi hành 12/11/2026 06:30</p>
+        </div>
+        <div class="flex gap-2.5">
+          <button class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink-2"><svg class="size-4"><use href="#i-file"/></svg> Biên bản</button>
+          <button class="flex h-9 items-center gap-2 rounded-lg bg-navy px-3.5 text-[13px] font-semibold text-white"><svg class="size-4"><use href="#i-pin"/></svg> Cập nhật vị trí</button>
+        </div>
+      </div>
+
+      <div class="mt-5 grid grid-cols-[1.6fr_1fr] gap-4">
+        <!-- map -->
+        <div class="flex flex-col overflow-hidden rounded-xl border border-line bg-white">
+          <div class="flex items-center justify-between border-b border-line px-4 py-2.5">
+            <h3 class="text-[13.5px] font-semibold">Hành trình trực tiếp</h3>
+            <span class="flex items-center gap-1.5 text-[11.5px] text-muted"><span class="size-1.5 rounded-full bg-emerald-500"></span> cập nhật 40 giây trước</span>
+          </div>
+          <div class="map-grid relative min-h-[210px] flex-1">
+            <svg viewBox="0 0 640 300" class="absolute inset-0 size-full">
+              <path d="M40 250 C 150 200, 190 160, 250 130 S 420 90, 470 70" fill="none" stroke="#B9B3A3" stroke-width="10" stroke-linecap="round"/>
+              <path d="M40 250 C 150 200, 190 160, 250 130" fill="none" stroke="#0F2C4C" stroke-width="4" stroke-linecap="round"/>
+              <path d="M250 130 C 320 110, 420 90, 470 70" fill="none" stroke="#C9A45C" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 8"/>
+              <circle cx="40" cy="250" r="7" fill="#0F2C4C" stroke="#fff" stroke-width="3"/>
+              <circle cx="470" cy="70" r="7" fill="#fff" stroke="#0F2C4C" stroke-width="3"/>
+              <g transform="translate(250 130)">
+                <circle r="15" fill="#0F2C4C" opacity="0.12"/>
+                <circle r="8" fill="#C9A45C" stroke="#fff" stroke-width="3"/>
+              </g>
+            </svg>
+            <div class="absolute left-6 top-5 rounded-lg bg-white/95 px-3 py-2 shadow-sm ring-1 ring-line">
+              <p class="text-[11px] font-semibold text-navy">TRIP-0921</p>
+              <p class="text-[10.5px] text-muted">Vị trí hiện tại · cách đích 1.240 km</p>
+            </div>
+            <div class="absolute bottom-4 left-4 flex rounded-lg bg-white/95 p-0.5 text-[11.5px] font-medium shadow-sm ring-1 ring-line">
+              <span class="rounded-md bg-navy px-2.5 py-1 text-white">Bản đồ</span>
+              <span class="rounded-md px-2.5 py-1 text-muted">Vệ tinh</span>
+            </div>
+            <div class="absolute bottom-4 right-4 flex flex-col gap-2">
+              <span class="grid size-8 place-items-center rounded-lg bg-white text-[14px] font-semibold text-ink-2 shadow-sm ring-1 ring-line">+</span>
+              <span class="grid size-8 place-items-center rounded-lg bg-white text-[14px] font-semibold text-ink-2 shadow-sm ring-1 ring-line">−</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 divide-x divide-line border-t border-line">
+            <div class="px-4 py-2.5"><p class="text-[10.5px] uppercase tracking-[0.06em] text-muted">Tài xế</p><p class="text-[12.5px] font-medium">Nguyễn Văn Hùng</p></div>
+            <div class="px-4 py-2.5"><p class="text-[10.5px] uppercase tracking-[0.06em] text-muted">Xe</p><p class="text-[12.5px] font-medium">51C-882.41</p></div>
+            <div class="px-4 py-2.5"><p class="text-[10.5px] uppercase tracking-[0.06em] text-muted">Dự kiến đến</p><p class="text-[12.5px] font-medium">13/11 · 18:20</p></div>
+          </div>
+        </div>
+
+        <!-- checklist + docs -->
+        <div class="space-y-4">
+          <div class="rounded-xl border border-line bg-white p-3.5">
+            <h3 class="text-[13.5px] font-semibold">Hồ sơ chuyến đi</h3>
+            <ul class="mt-2 space-y-2">
+              <li class="flex items-start gap-3">
+                <span class="grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-white"><svg class="size-3"><use href="#i-check"/></svg></span>
+                <div class="flex-1"><p class="text-[12.5px] font-medium">Giấy kiểm dịch xuất khẩu</p><p class="text-[11px] text-muted">Đã xác thực · 10/11</p></div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-white"><svg class="size-3"><use href="#i-check"/></svg></span>
+                <div class="flex-1"><p class="text-[12.5px] font-medium">Hộ chiếu ngựa</p><p class="text-[11px] text-muted">Thunder Bay · Golden Sirocco</p></div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="relative grid size-5 shrink-0 place-items-center rounded-full border-2 border-gold bg-gold-soft"><span class="size-1.5 rounded-full bg-gold-deep"></span></span>
+                <div class="flex-1"><p class="text-[12.5px] font-medium">Bảo hiểm vận chuyển</p><p class="text-[11px] text-muted">Chờ đối tác xác nhận</p></div>
+                <span class="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10.5px] font-semibold text-amber-700">Đang xử lý</span>
+              </li>
+              
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-line bg-white p-3.5">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[13.5px] font-semibold">Chi phí</h3>
+              <a class="text-[11.5px] font-medium text-navy">Hoá đơn</a>
+            </div>
+            <div class="mt-3 space-y-2 text-[12.5px]">
+              <div class="flex justify-between"><span class="text-muted">Phí vận chuyển</span><span class="tnum">₫ 82.400.000</span></div>
+              <div class="flex justify-between"><span class="text-muted">Kiểm dịch &amp; giấy tờ</span><span class="tnum">₫ 12.600.000</span></div>
+              <div class="flex justify-between"><span class="text-muted">Bảo hiểm</span><span class="tnum">₫ 8.200.000</span></div>
+              <div class="mt-2 flex justify-between border-t border-line pt-2 font-semibold"><span>Tổng cộng</span><span class="tnum text-navy">₫ 103.200.000</span></div>
+            </div>
+            <div class="mt-3 flex items-center gap-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-[11.5px] font-medium text-emerald-700">
+              <svg class="size-3.5"><use href="#i-check"/></svg> Đã thanh toán 50% tiền cọc
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- timeline -->
+      <div class="mt-3 rounded-xl border border-line bg-white px-4 py-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-[13.5px] font-semibold">Nhật ký hành trình</h3>
+          <span class="text-[11.5px] text-muted">6 sự kiện</span>
+        </div>
+        <ol class="mt-4 grid grid-cols-5 gap-3">
+          <li class="relative">
+            <div class="flex items-center gap-2">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-navy text-white"><svg class="size-3"><use href="#i-check"/></svg></span>
+              <span class="h-0.5 flex-1 bg-navy"></span>
+            </div>
+            <p class="mt-2 text-[12px] font-semibold">Đã bàn giao ngựa</p>
+            <p class="text-[11px] text-muted">11/11 · 18:00 · Liège</p>
+          </li>
+          <li class="relative">
+            <div class="flex items-center gap-2">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-navy text-white"><svg class="size-3"><use href="#i-check"/></svg></span>
+              <span class="h-0.5 flex-1 bg-navy"></span>
+            </div>
+            <p class="mt-2 text-[12px] font-semibold">Khởi hành</p>
+            <p class="text-[11px] text-muted">12/11 · 06:30</p>
+          </li>
+          <li class="relative">
+            <div class="flex items-center gap-2">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full bg-navy text-white"><svg class="size-3"><use href="#i-check"/></svg></span>
+              <span class="h-0.5 flex-1 bg-navy"></span>
+            </div>
+            <p class="mt-2 text-[12px] font-semibold">Qua trạm kiểm dịch</p>
+            <p class="text-[11px] text-muted">12/11 · 09:20</p>
+          </li>
+          <li class="relative">
+            <div class="flex items-center gap-2">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full border-2 border-gold bg-gold-soft"><span class="size-1.5 rounded-full bg-gold-deep"></span></span>
+              <span class="h-0.5 flex-1 bg-line"></span>
+            </div>
+            <p class="mt-2 text-[12px] font-semibold text-navy">Đang vận chuyển</p>
+            <p class="text-[11px] text-muted">cập nhật 40 giây trước</p>
+          </li>
+          <li class="relative">
+            <div class="flex items-center gap-2">
+              <span class="grid size-6 shrink-0 place-items-center rounded-full border-2 border-line bg-white"></span>
+            </div>
+            <p class="mt-2 text-[12px] font-medium text-muted">Đến Meydan</p>
+            <p class="text-[11px] text-muted">dự kiến 13/11 · 18:20</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 5. DESIGN TOKENS -->
+<section data-screen="tokens" class="hidden h-[720px] w-full overflow-auto bg-cream px-8 py-5">
+  <div class="flex items-end justify-between">
+    <div>
+      <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-deep">IRTMS · Design system</p>
+      <h1 class="mt-1 text-[26px] font-semibold tracking-[-0.015em]">Bộ token &amp; thành phần (Tailwind)</h1>
+      <p class="mt-1 text-[13px] text-muted">Kế thừa bảng màu navy / gold / kem của bản Figma cũ, làm phẳng bóng đổ và tăng khoảng thở.</p>
+    </div>
+    <span class="rounded-full bg-white px-3 py-1.5 text-[11.5px] font-medium text-ink-2 ring-1 ring-line">Tailwind CSS v4 · Inter</span>
+  </div>
+
+  <div class="mt-4 grid grid-cols-[1.15fr_1fr] gap-4">
+    <div class="rounded-xl border border-line bg-white p-4">
+      <h2 class="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Màu thương hiệu</h2>
+      <div class="mt-3 grid grid-cols-4 gap-3">
+        <div><div class="h-10 rounded-lg bg-navy"></div><p class="mt-1.5 text-[11.5px] font-semibold">navy</p><p class="text-[10.5px] text-muted">#0F2C4C</p></div>
+        <div><div class="h-10 rounded-lg bg-navy-mid"></div><p class="mt-1.5 text-[11.5px] font-semibold">navy-mid</p><p class="text-[10.5px] text-muted">#1B4067</p></div>
+        <div><div class="h-10 rounded-lg bg-gold"></div><p class="mt-1.5 text-[11.5px] font-semibold">gold</p><p class="text-[10.5px] text-muted">#C9A45C</p></div>
+        <div><div class="h-10 rounded-lg bg-gold-soft ring-1 ring-line"></div><p class="mt-1.5 text-[11.5px] font-semibold">gold-soft</p><p class="text-[10.5px] text-muted">#FBF2DF</p></div>
+        <div><div class="h-10 rounded-lg bg-cream ring-1 ring-line"></div><p class="mt-1.5 text-[11.5px] font-semibold">cream</p><p class="text-[10.5px] text-muted">#F7F5F0</p></div>
+        <div><div class="h-10 rounded-lg bg-white ring-1 ring-line"></div><p class="mt-1.5 text-[11.5px] font-semibold">surface</p><p class="text-[10.5px] text-muted">#FFFFFF</p></div>
+        <div><div class="h-10 rounded-lg bg-line"></div><p class="mt-1.5 text-[11.5px] font-semibold">line</p><p class="text-[10.5px] text-muted">#E4E2DB</p></div>
+        <div><div class="h-10 rounded-lg bg-ink-2"></div><p class="mt-1.5 text-[11.5px] font-semibold">ink-2</p><p class="text-[10.5px] text-muted">#3E566C</p></div>
+      </div>
+
+      <h2 class="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Màu trạng thái</h2>
+      <div class="mt-3 grid grid-cols-5 gap-3">
+        <div><div class="h-10 rounded-lg bg-emerald-500"></div><p class="mt-1.5 text-[11px] font-semibold text-emerald-700">Đã duyệt</p></div>
+        <div><div class="h-10 rounded-lg bg-amber-500"></div><p class="mt-1.5 text-[11px] font-semibold text-amber-700">Chờ duyệt</p></div>
+        <div><div class="h-10 rounded-lg bg-sky-600"></div><p class="mt-1.5 text-[11px] font-semibold text-sky-700">Đang rà soát</p></div>
+        <div><div class="h-10 rounded-lg bg-rose-600"></div><p class="mt-1.5 text-[11px] font-semibold text-rose-700">Cần bổ sung</p></div>
+        <div><div class="h-10 rounded-lg bg-slate-400"></div><p class="mt-1.5 text-[11px] font-semibold text-slate-600">Từ chối</p></div>
+      </div>
+
+      <h2 class="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Thang chữ</h2>
+      <div class="mt-2 space-y-1">
+        <p class="text-[26px] font-semibold tracking-[-0.015em]">Display 26 / 600</p>
+        <p class="text-[20px] font-semibold">Heading 20 / 600</p>
+        <p class="text-[14px] font-semibold">Title 14 / 600</p>
+        <p class="text-[13.5px]">Body 13.5 / 400 — nội dung chính của bảng và biểu mẫu</p>
+        
+        
+      </div>
+    </div>
+
+    <div class="space-y-5">
+      <div class="rounded-xl border border-line bg-white p-4">
+        <h2 class="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Nút</h2>
+        <div class="mt-3 flex flex-wrap items-center gap-2.5">
+          <button class="flex h-9 items-center gap-2 rounded-lg bg-navy px-3.5 text-[13px] font-semibold text-white shadow-[0_4px_14px_rgba(15,44,76,.20)]">Tạo yêu cầu</button>
+          <button class="flex h-9 items-center gap-2 rounded-lg border border-line bg-white px-3.5 text-[13px] font-medium text-ink-2">Huỷ</button>
+          <button class="h-9 rounded-lg bg-gold px-3.5 text-[13px] font-semibold text-navy">Duyệt</button>
+          <button class="h-9 rounded-lg bg-rose-600 px-3.5 text-[13px] font-semibold text-white">Từ chối</button>
+          <button class="h-9 rounded-lg px-3.5 text-[13px] font-medium text-ink-2 underline decoration-line underline-offset-4">Bỏ qua</button>
+          <button class="h-9 cursor-not-allowed rounded-lg bg-cream px-3.5 text-[13px] font-semibold text-muted">Vô hiệu</button>
+        </div>
+
+        <h2 class="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Nhãn trạng thái</h2>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <span class="rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-600/15">Đã duyệt</span>
+          <span class="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-600/15">Chờ duyệt</span>
+          <span class="rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-700 ring-1 ring-sky-600/15">Đang rà soát</span>
+          <span class="rounded-md bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-700 ring-1 ring-rose-600/15">Cần bổ sung</span>
+          <span class="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-500/15">Từ chối</span>
+          <span class="rounded-md bg-navy px-2 py-0.5 text-[11px] font-semibold text-gold">Đang vận chuyển</span>
+        </div>
+
+        <h2 class="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Ô nhập</h2>
+        <div class="mt-3 space-y-3">
+          <label class="block">
+            <span class="mb-1.5 block text-[12.5px] font-medium">Tên ngựa <span class="text-rose-600">*</span></span>
+            <span class="flex h-10 items-center rounded-lg border border-navy bg-white px-3.5 shadow-[0_0_0_4px_rgba(201,164,92,.25)] text-[13.5px]">Thunder Bay</span>
+            <span class="mt-1 block text-[11.5px] text-muted">Tên trên hộ chiếu ngựa.</span>
+          </label>
+          
+          
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-line bg-white p-4">
+        <h2 class="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">Khoảng cách &amp; bo góc</h2>
+        <div class="mt-3 flex items-end gap-4 text-[11.5px] text-muted">
+          <div class="text-center"><div class="h-8 w-8 rounded-lg bg-navy-soft ring-1 ring-line"></div><p class="mt-1">8px</p></div>
+          <div class="text-center"><div class="h-10 w-10 rounded-lg bg-navy-soft ring-1 ring-line"></div><p class="mt-1">10px</p></div>
+          <div class="text-center"><div class="h-12 w-12 rounded-xl bg-navy-soft ring-1 ring-line"></div><p class="mt-1">12px</p></div>
+          <div class="text-center"><div class="h-12 w-12 rounded-2xl bg-navy-soft ring-1 ring-line"></div><p class="mt-1">16px</p></div>
+          <div class="text-center"><div class="h-12 w-12 rounded-full bg-navy-soft ring-1 ring-line"></div><p class="mt-1">full</p></div>
+          <div class="ml-auto text-right">
+            <p class="font-semibold text-ink-2">Nhịp 4px</p>
+            <p>4 · 8 · 12 · 16 · 20 · 24</p>
+          </div>
+        </div>
+        <div class="mt-4 grid grid-cols-3 gap-3 text-[11.5px]">
+          <div class="rounded-lg border border-line p-2.5"><p class="font-semibold text-ink-2">shadow-xs</p><p class="text-muted">0 1px 2px / 4%</p></div>
+          <div class="rounded-lg border border-line p-2.5 shadow-[0_2px_8px_rgba(15,44,76,.08)]"><p class="font-semibold text-ink-2">shadow-sm</p><p class="text-muted">0 2px 8px / 8%</p></div>
+          <div class="rounded-lg border border-line p-2.5 shadow-[0_12px_32px_rgba(15,44,76,.16)]"><p class="font-semibold text-ink-2">shadow-lg</p><p class="text-muted">0 12px 32px / 16%</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="mt-5 text-center text-[11px] text-muted">Bản mockup tĩnh · chưa áp dụng vào mã nguồn React</p>
+</section>
+
+<script>
+  var wanted = new URLSearchParams(location.search).get('screen') || 'dashboard';
+  document.querySelectorAll('[data-screen]').forEach(function (el) {
+    el.classList.toggle('hidden', el.dataset.screen !== wanted);
+  });
+</script>
+</body>
+</html>

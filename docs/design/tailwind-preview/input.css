@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --color-navy: #0F2C4C;
+  --color-navy-deep: #0A2038;
+  --color-navy-mid: #1B4067;
+  --color-navy-soft: #E8EEF5;
+  --color-gold: #C9A45C;
+  --color-gold-soft: #FBF2DF;
+  --color-gold-deep: #9A7826;
+  --color-cream: #F7F5F0;
+  --color-ink: #0F2C4C;
+  --color-ink-2: #3E566C;
+  --color-muted: #6E8091;
+  --color-line: #E4E2DB;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* subtle grid used as a stand-in for the map surface */
+.map-grid {
+  background-color: #EDEAE1;
+  background-image:
+    linear-gradient(to right, rgba(15, 44, 76, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 44, 76, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.login-glow {
+  background:
+    radial-gradient(120% 90% at 10% 0%, #1B4067 0%, transparent 55%),
+    radial-gradient(90% 70% at 95% 100%, #17456E 0%, transparent 60%),
+    #0F2C4C;
+}
